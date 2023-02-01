@@ -37,9 +37,11 @@ airport <- "BOS"
 airport == ATL
 ```
 
+
 **Observations**:
 
-- Write your explanation here
+It's comparing the unassigned variable ATL to a character string "BOS" which is
+a name error and a type error.
 
 ## Casting
 <!-- -------------------------------------------------- -->
@@ -55,7 +57,8 @@ Sometimes our data will not be in the form we want; in this case we may need to 
 
 ```{r q2-task}
 v_string <- c("00", "45", "90")
-v_integer <- NA_real_
+v_integer <- as.integer(v_string)
+as.integer((v_string))
 ```
 
 Use the following test to check your work.

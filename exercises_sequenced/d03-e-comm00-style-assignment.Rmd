@@ -29,7 +29,11 @@ library(tidyverse)
 
 ```{r q1-task}
 ## Original code; hard to read
-summarize(group_by(diamonds, cut), mean_price = mean(price))
+##summarize(group_by(diamonds, cut), mean_price = mean(price))
+diamonds %>%
+  group_by(cut) %>%
+    summarize(mean_price = mean(price))
+
 ```
 
 ```{r q1-solution}
@@ -43,12 +47,12 @@ summarize(group_by(diamonds, cut), mean_price = mean(price))
 ```{r q2-task}
 ## NOTE: You can copy this code to the chunk below
 iris %>%
-  mutate(Sepal.Area=Sepal.Length*Sepal.Width) %>%
-  group_by( Species ) %>%
-  summarize_if(is.numeric,mean)%>%
+  mutate(Sepal.Area = Sepal.Length*Sepal.Width) %>%
+  group_by(Species) %>%
+  summarize_if(is.numeric, mean)%>%
   ungroup() %>%
-  pivot_longer( names_to="measure",values_to="value",cols=-Species ) %>%
-  arrange(value )
+  pivot_longer(names_to = "measure", values_to = "value", cols = -Species ) %>%
+  arrange(value)
 ```
 
 ```{r q2-solution}
@@ -62,7 +66,10 @@ iris %>%
 ```{r q3-description}
 iris %>%
   group_by(Species) %>%
-  summarize(Sepal.Length = mean(Sepal.Length), Sepal.Width = mean(Sepal.Width), Petal.Length = mean(Petal.Length), Petal.Width = mean(Petal.Width))
+  summarize(Sepal.Length = mean(Sepal.Length),
+            Sepal.Width = mean(Sepal.Width),
+            Petal.Length = mean(Petal.Length),
+            Petal.Width = mean(Petal.Width))
 ```
 
 ```{r q3-task}
@@ -135,6 +142,11 @@ ggplot(
 ```
 
 ```{r q4-task}
+iris %>%
+  pivot_longer(names_to = c("Part", ".value"),
+               names_sep = "\\.",
+               cols = -Species) %>%
+  ggplot(aes(Width, Length, color = Part)) + geom_point() + facet_wrap(~Species)
 ```
 
 <!-- include-exit-ticket -->

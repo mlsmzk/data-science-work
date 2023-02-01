@@ -31,33 +31,33 @@ knitr::opts_chunk$set(echo = TRUE)
 
 * Within the script editor or a chunk
 
-    * `Alt` + `-`
+    * `Alt` + `-` - Inserts the assignment operator
+    
+
+    * `Shift` + `Cmd/Ctrl` + `M` - Inserts the pipe operator
 
 
-    * `Shift` + `Cmd/Ctrl` + `M`
+    * `Cmd/Ctrl` + `Enter` - Runs the selected part/runs the current line
 
 
-    * `Cmd/Ctrl` + `Enter`
+    * `F1` (Note: on a Mac you need to press `fn` + `F1`) - Show help for function on cursor
 
 
-    * `F1` (Note: on a Mac you need to press `fn` + `F1`)
-
-
-	* `Cmd/Ctrl` + `Shift` + `C`
+	* `Cmd/Ctrl` + `Shift` + `C` - Comments out selected line
 
 
 
 * Within R Markdown
 
-    * `Cmd/Ctrl` + `Alt` + `I`
+    * `Cmd/Ctrl` + `Alt` + `I` - Creates a new code cell
 
 
 * Within a chunk
 
-    * `Shift` + `Cmd/Ctrl` + `Enter`
+    * `Shift` + `Cmd/Ctrl` + `Enter` - Runs code chunk
 
 
-    * `Ctrl` + `I` (`Cmd` + `I`)
+    * `Ctrl` + `I` (`Cmd` + `I`) - Removes indentation
 
 
 Try this below!
@@ -77,14 +77,22 @@ c(
 
 * Run the code, don't display it, but show its results?
 
+  echo = FALSE
+
 
 * Run the code, but don't display it or its results?
+
+  include = FALSE
 
 
 ### __q3__ How do stop the code in a chunk from running once it has started?
 
+  Esc
+
 
 ### __q4__ How do you show the "Document Outline" in RStudio?
+
+  Ctrl + Shift + O
 
 *Hint*: Try googling "rstudio document outline"
 
