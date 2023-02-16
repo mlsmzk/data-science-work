@@ -26,7 +26,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category    | Needs Improvement                                                                                                | Satisfactory                                                                                                               |
-|------------------|-----------------------------|-------------------------|
+|-------------------|-----------------------------|-------------------------|
 | Effort      | Some task **q**'s left unattempted                                                                               | All task **q**'s attempted                                                                                                 |
 | Observed    | Did not document observations, or observations incorrect                                                         | Documented correct observations based on analysis                                                                          |
 | Supported   | Some observations not clearly supported by analysis                                                              | All observations clearly supported by analysis (table, graph, etc.)                                                        |
@@ -122,14 +122,14 @@ print("Very good!")
 **Observations**:
 
 -   Is there "one true value" for the material properties of Aluminum?
-    -   (Your response here)
+    -   It seems like there isn't one true value; rather, the data indicates a range of values that material properties can take on. This is also a dataset with only one alloy tested, so it would be impossible to generalize beyond this specific alloy.
 -   How many aluminum alloys are in this dataset? How do you know?
-    -   (Your response here)
+    -   There was one kind of alloy tested, al_24st. A quick survey of the data indicates this.
 -   What angles were tested?
-    -   (Your response here)
+    -   0, 45, and 90 degrees were tested.
 -   What thicknesses were tested?
-    -   (Your response here)
--   (Write your own question here)
+    -   Thicknesses of 0.022, 0.032, 0.064, and 0.081 were tested.
+-   Is poisson's ratio (mu) independent of angle?
 
 ## Visualize
 
@@ -139,11 +139,14 @@ print("Very good!")
 
 ```{r q3-task}
 ## TASK: Investigate your question from q1 here
+df_stang_long %>%
+  ggplot() +
+    geom_boxplot(mapping = aes(x = cut_interval(angle, n=3), y = mu))
 ```
 
 **Observations**:
 
--   (Address your question from q1 here)
+-   The box plot illustrated above indicates that the medians of Poisson's ratio fit into the IQR of the (30, 60] interval containing the 45 degree measurements. This says that the median of the whole dataset is somewhere in the IQR for 45 degrees. The eye test says that angles closer to 45 degrees increase Poisson's ratio, but it would be difficult to examine that without more angles tested. The closeness of IQRs in general is a decent refutation to any correlation there may be.
 
 ### **q4** Consider the following statement:
 
@@ -155,7 +158,7 @@ Note that the "amount of material" would vary with the thickness of a tested pla
 ## NOTE: No need to change; run this chunk
 df_stang_long %>%
 
-  ggplot(aes(nu, E, color = as_factor(thick))) +
+  ggplot(aes(mu, E, color = as_factor(thick))) +
   geom_point(size = 3) +
   theme_minimal()
 ```
@@ -163,7 +166,12 @@ df_stang_long %>%
 **Observations**:
 
 -   Does this graph support or contradict the claim above?
-    -   (Your response here)
+    -   The graph does support the claim that elasticity is an intensive material property.
+        -   For .022, .032, and .064 thicknesses, the value of elasticity is relatively similar and there seems to be no trend.
+
+        -   For the graph to support this claim, we would expect to see thicknesses of many varieties have similar elasticities. This is precisely what we see among the former three thicknesses.
+    -   This evidence is not conclusive
+        -   If it was, then one would expect to see data of thickness .081 measuring higher on the elasticity scale rather than all being at the bottom; but this could be attributed to an unknown relationship between Poisson's ratio and elasticity where the data point with mu=0.310, thickness=.022 is some outlier.
 
 # References
 
