@@ -142,14 +142,12 @@ your other visuals.
 
 ```{r q1.2}
 # WRITE YOUR CODE HERE
-df_antibiotics %>%
+df_longer %>%
   ggplot(aes(shape = gram)) +
-  geom_point(mapping = aes(x = bacteria, y = penicillin), color = "blue") +
-  geom_point(mapping = aes(x = bacteria, y = streptomycin), color = "red") +
-  geom_point(mapping = aes(x = bacteria, y = neomycin), color = "yellow") +
+  geom_point(mapping = aes(x = bacteria, y = MIC, color = antibiotic)) +
   geom_point(mapping = aes(x = bacteria, y = 0.1), color = "black") +
   scale_y_log10() +
-  +labs(y= "MIC") +
+  labs(y="MIC") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
   
 ```
@@ -193,7 +191,7 @@ your other visuals.
 df_longer %>%
   ggplot() +
   geom_tile(mapping = aes(x = antibiotic, y = bacteria, fill = log10(MIC)))
-
+  
 df_longer
 ```
 
@@ -208,6 +206,11 @@ your other visuals.
 
 ```{r q1.5}
 # WRITE YOUR CODE HERE
+df_longer %>%
+    filter(MIC <= 0.1) %>%
+      ggplot() +
+      geom_point(mapping = aes(x = bacteria, y = MIC, color = antibiotic)) +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 
 ```
 
@@ -230,10 +233,46 @@ opportunity to think about why this is.**
 > How do the three antibiotics vary in their effectiveness against
 > bacteria of different genera and Gram stain?
 
-*Observations* - What is your response to the question above? - (Write
-your response here) - Which of your visuals above (1 through 5) is
-**most effective** at helping to answer this question? - (Write your
-response here) - Why? - (Write your response here)
+*Observations* -
+
+What is your response to the question above?
+
+-   Penicillin seems to be very effective in treating bacteria in the
+    genus of staphylococcus or streptococcus (all gram positive) as the
+    MIC of penicillin is sufficiently low to be effective in human
+    treatment. It's rather impractical for other strains, though it does
+    inhibit their growth eventually.
+
+-   Neomycin is effective against strains of salmonella as well as the
+    brucella strain. These are gram negative bacteria. It also does
+    reasonably well against three gram positive bacteria: one bacillus,
+    one streptococcus, and one staphylococcus. In general, the MIC tends
+    to be smaller and seems to have less spread for gram negative
+    bacteria.
+
+-   Streptomycin seems to be effective and practical for only four
+    genera, proteus (gram negative), bacillus (gram positive), and the
+    two staphylococci in the dataset (both gram positive). This seems to
+    indicate that practicality favors streptomycin use against gram
+    positive bacteria, although the eye test indicates that on average
+    the gram negative bacteria might have lower MIC.
+
+Which of your visuals above (1 through 5) is **most effective** at
+helping to answer this question?
+
+-   The dot plot (1) was easily most effective at answering this
+    question.
+
+Why?
+
+-   It was easy to have a visualization where data is separated between
+    gram positive and negative, whereas it was only indicated by shape
+    with others, which would've been harder to read.
+
+-   Having all bacteria colored was nice, especially given that there
+    are few enough bacteria in the dataset where colors are
+    distinguishable. It was also fortunate that their order is one such
+    that similar colors are from similar strains (e.g. staphylococci).
 
 #### Guiding Question 2
 
@@ -244,10 +283,32 @@ and in 1984 *Streptococcus fecalis* was renamed *Enterococcus fecalis*
 > Why was *Diplococcus pneumoniae* was renamed *Streptococcus
 > pneumoniae*?
 
-*Observations* - What is your response to the question above? - (Write
-your response here) - Which of your visuals above (1 through 5) is
-**most effective** at helping to answer this question? - (Write your
-response here) - Why? - (Write your response here)
+*Observations* - What is your response to the question above?
+
+-   Against various antibiotics, they receive very similar MIC ratings.
+
+-   They are all gram positive.
+
+Which of your visuals above (1 through 5) is **most effective** at
+helping to answer this question?
+
+-   My scatterplot (2) was most effective at answering this question.
+
+Why?
+
+-   It contains information about both their MIC and gram grades.
+    Visualizations 3 and 5 target the number of/kind of antibiotics that
+    are worthy for human treatment, and were designed to answer
+    questions more in the line of "how practical is "x" antibiotic
+    against "y" bacteria. Visualization 1 makes it difficult to see
+    diplococcus pneumoniae since it is so close to streptococci, but it
+    it were distinguishable then perhaps visualization 1 would be in
+    contention. Visualization 4 is certainly a winner, because the
+    heatmap's pattern for diplococcus pneumoniae echoes what can be seen
+    for two of the three streptococci very similarly. On the other hand,
+    it didn't answer the question of whether they were gram positive or
+    gram negative, so I decided that visualization 2 helped me answer
+    the question best.
 
 # References
 
