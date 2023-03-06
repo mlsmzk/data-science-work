@@ -1,13 +1,7 @@
----
-title: "Antibiotics"
-author: "(Your name here)"
-date: 2020-
-output:
-  github_document
-editor_options: 
-  markdown: 
-    wrap: 72
----
+Antibiotics
+================
+(Your name here)
+2020-
 
 *Purpose*: Creating effective data visualizations is an *iterative*
 process; very rarely will the first graph you make be the most
@@ -42,12 +36,12 @@ define how you will be graded, both on an individual and team basis.
 <!-- ------------------------- -->
 
 | Category    | Needs Improvement                                                                                                | Satisfactory                                                                                                               |
-|-------------------|-----------------------------|-------------------------|
-| Effort      | Some task **q**'s left unattempted                                                                               | All task **q**'s attempted                                                                                                 |
+|-------------|------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
+| Effort      | Some task **q**’s left unattempted                                                                               | All task **q**’s attempted                                                                                                 |
 | Observed    | Did not document observations, or observations incorrect                                                         | Documented correct observations based on analysis                                                                          |
 | Supported   | Some observations not clearly supported by analysis                                                              | All observations clearly supported by analysis (table, graph, etc.)                                                        |
 | Assessed    | Observations include claims not supported by the data, or reflect a level of certainty not warranted by the data | Observations are appropriately qualified by the quality & relevance of the data and (in)conclusiveness of the support      |
-| Specified   | Uses the phrase "more data are necessary" without clarification                                                  | Any statement that "more data are necessary" specifies which *specific* data are needed to answer what *specific* question |
+| Specified   | Uses the phrase “more data are necessary” without clarification                                                  | Any statement that “more data are necessary” specifies which *specific* data are needed to answer what *specific* question |
 | Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability                                 | Code sufficiently close to the [style guide](https://style.tidyverse.org/)                                                 |
 
 ## Due Date
@@ -59,12 +53,24 @@ before the day of the class discussion of the challenge. See the
 [Syllabus](https://docs.google.com/document/d/1qeP6DUS8Djq_A0HMllMqsSqX3a9dbcx1/edit?usp=sharing&ouid=110386251748498665069&rtpof=true&sd=true)
 for more information.
 
-```{r setup}
+``` r
 library(tidyverse)
+```
+
+    ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
+    ## ✔ ggplot2 3.4.0     ✔ purrr   1.0.1
+    ## ✔ tibble  3.1.8     ✔ dplyr   1.1.0
+    ## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
+    ## ✔ readr   2.1.3     ✔ forcats 1.0.0
+    ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter() masks stats::filter()
+    ## ✖ dplyr::lag()    masks stats::lag()
+
+``` r
 library(ggrepel)
 ```
 
-*Background*: The data[1] we study in this challenge report the
+*Background*: The data\[1\] we study in this challenge report the
 [*minimum inhibitory
 concentration*](https://en.wikipedia.org/wiki/Minimum_inhibitory_concentration)
 (MIC) of three drugs for different bacteria. The smaller the MIC for a
@@ -72,20 +78,51 @@ given drug and bacteria pair, the more practical the drug is for
 treating that particular bacteria. An MIC value of *at most* 0.1 is
 considered necessary for treating human patients.
 
-These data report MIC values for three antibiotics---penicillin,
-streptomycin, and neomycin---on 16 bacteria. Bacteria are categorized
-into a genus based on a number of features, including their resistance
-to antibiotics.
+These data report MIC values for three antibiotics—penicillin,
+streptomycin, and neomycin—on 16 bacteria. Bacteria are categorized into
+a genus based on a number of features, including their resistance to
+antibiotics.
 
-```{r load}
+``` r
 ## NOTE: If you extracted all challenges to the same location,
 ## you shouldn't have to change this filename
 filename <- "./data/antibiotics.csv"
 
 ## Load the data
 df_antibiotics <- read_csv(filename)
+```
+
+    ## Rows: 16 Columns: 5
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (2): bacteria, gram
+    ## dbl (3): penicillin, streptomycin, neomycin
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+``` r
 df_antibiotics %>% knitr::kable()
 ```
+
+| bacteria                        | penicillin | streptomycin | neomycin | gram     |
+|:--------------------------------|-----------:|-------------:|---------:|:---------|
+| Aerobacter aerogenes            |    870.000 |         1.00 |    1.600 | negative |
+| Brucella abortus                |      1.000 |         2.00 |    0.020 | negative |
+| Bacillus anthracis              |      0.001 |         0.01 |    0.007 | positive |
+| Diplococcus pneumonia           |      0.005 |        11.00 |   10.000 | positive |
+| Escherichia coli                |    100.000 |         0.40 |    0.100 | negative |
+| Klebsiella pneumoniae           |    850.000 |         1.20 |    1.000 | negative |
+| Mycobacterium tuberculosis      |    800.000 |         5.00 |    2.000 | negative |
+| Proteus vulgaris                |      3.000 |         0.10 |    0.100 | negative |
+| Pseudomonas aeruginosa          |    850.000 |         2.00 |    0.400 | negative |
+| Salmonella (Eberthella) typhosa |      1.000 |         0.40 |    0.008 | negative |
+| Salmonella schottmuelleri       |     10.000 |         0.80 |    0.090 | negative |
+| Staphylococcus albus            |      0.007 |         0.10 |    0.001 | positive |
+| Staphylococcus aureus           |      0.030 |         0.03 |    0.001 | positive |
+| Streptococcus fecalis           |      1.000 |         1.00 |    0.100 | positive |
+| Streptococcus hemolyticus       |      0.001 |        14.00 |   10.000 | positive |
+| Streptococcus viridans          |      0.005 |        10.00 |   40.000 | positive |
 
 # Visualization
 
@@ -102,7 +139,7 @@ For all five of the visuals, you must show information on *all 16
 bacteria*. For the first two visuals, you must *show all variables*.
 
 *Hint 1*: Try working quickly on this part; come up with a bunch of
-ideas, and don't fixate on any one idea for too long. You will have a
+ideas, and don’t fixate on any one idea for too long. You will have a
 chance to refine later in this challenge.
 
 *Hint 2*: The data `df_antibiotics` are in a *wide* format; it may be
@@ -115,7 +152,7 @@ In this visual you must show *all three* effectiveness values for *all
 16 bacteria*. You must also show whether or not each bacterium is Gram
 positive or negative.
 
-```{r q1.1}
+``` r
 # WRITE YOUR CODE HERE
 df_longer <- df_antibiotics %>%
   pivot_longer(
@@ -131,6 +168,8 @@ df_longer %>%
     facet_wrap(~ antibiotic)
 ```
 
+![](c05-antibiotics-assignment_files/figure-gfm/q1.1-1.png)<!-- -->
+
 #### Visual 2 (All variables)
 
 In this visual you must show *all three* effectiveness values for *all
@@ -140,7 +179,7 @@ positive or negative.
 Note that your visual must be *qualitatively different* from *all* of
 your other visuals.
 
-```{r q1.2}
+``` r
 # WRITE YOUR CODE HERE
 df_longer %>%
   ggplot(aes(shape = gram)) +
@@ -149,8 +188,9 @@ df_longer %>%
   scale_y_log10() +
   labs(y="MIC") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-  
 ```
+
+![](c05-antibiotics-assignment_files/figure-gfm/q1.2-1.png)<!-- -->
 
 #### Visual 3 (Some variables)
 
@@ -161,7 +201,7 @@ bacteria*.
 Note that your visual mustsf be *qualitatively different* from *all* of
 your other visuals.
 
-```{r q1.3}
+``` r
 # WRITE YOUR CODE HERE
 
 df_antibiotics %>%
@@ -177,6 +217,8 @@ df_antibiotics %>%
   facet_wrap(~ bacteria)
 ```
 
+![](c05-antibiotics-assignment_files/figure-gfm/q1.3-1.png)<!-- -->
+
 #### Visual 4 (Some variables)
 
 In this visual you may show a *subset* of the variables (`penicillin`,
@@ -186,12 +228,14 @@ bacteria*.
 Note that your visual must be *qualitatively different* from *all* of
 your other visuals.
 
-```{r q1.4}
+``` r
 # WRITE YOUR CODE HERE
 df_longer %>%
   ggplot() +
   geom_tile(mapping = aes(x = antibiotic, y = bacteria, fill = log10(MIC)))
 ```
+
+![](c05-antibiotics-assignment_files/figure-gfm/q1.4-1.png)<!-- -->
 
 #### Visual 5 (Some variables)
 
@@ -202,15 +246,16 @@ bacteria*.
 Note that your visual must be *qualitatively different* from *all* of
 your other visuals.
 
-```{r q1.5}
+``` r
 # WRITE YOUR CODE HERE
 df_longer %>%
     filter(MIC <= 0.1) %>%
       ggplot() +
       geom_point(mapping = aes(x = bacteria, y = MIC, color = antibiotic)) +
       theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-
 ```
+
+![](c05-antibiotics-assignment_files/figure-gfm/q1.5-1.png)<!-- -->
 
 ### **q2** Assess your visuals
 
@@ -218,11 +263,11 @@ There are **two questions** below; use your five visuals to help answer
 both Guiding Questions. Note that you must also identify which of your
 five visuals were most helpful in answering the questions.
 
-*Hint 1*: It's possible that *none* of your visuals is effective in
+*Hint 1*: It’s possible that *none* of your visuals is effective in
 answering the questions below. You may need to revise one or more of
 your visuals to answer the questions below!
 
-*Hint 2*: It's **highly unlikely** that the same visual is the most
+*Hint 2*: It’s **highly unlikely** that the same visual is the most
 effective at helping answer both guiding questions. **Use this as an
 opportunity to think about why this is.**
 
@@ -235,85 +280,83 @@ opportunity to think about why this is.**
 
 What is your response to the question above?
 
--   Penicillin seems to be very effective in treating bacteria in the
-    genus of staphylococcus or streptococcus (all gram positive) as the
-    MIC of penicillin is sufficiently low to be effective in human
-    treatment. It's rather impractical for other strains, though it does
-    inhibit their growth eventually.
+- Penicillin seems to be very effective in treating bacteria in the
+  genus of staphylococcus or streptococcus (all gram positive) as the
+  MIC of penicillin is sufficiently low to be effective in human
+  treatment. It’s rather impractical for other strains, though it does
+  inhibit their growth eventually.
 
--   Neomycin is effective against strains of salmonella as well as the
-    brucella strain. These are gram negative bacteria. It also does
-    reasonably well against three gram positive bacteria: one bacillus,
-    one streptococcus, and one staphylococcus. In general, the MIC tends
-    to be smaller and seems to have less spread for gram negative
-    bacteria.
+- Neomycin is effective against strains of salmonella as well as the
+  brucella strain. These are gram negative bacteria. It also does
+  reasonably well against three gram positive bacteria: one bacillus,
+  one streptococcus, and one staphylococcus. In general, the MIC tends
+  to be smaller and seems to have less spread for gram negative
+  bacteria.
 
--   Streptomycin seems to be effective and practical for only four
-    genera, proteus (gram negative), bacillus (gram positive), and the
-    two staphylococci in the dataset (both gram positive). This seems to
-    indicate that practicality favors streptomycin use against gram
-    positive bacteria, although the eye test indicates that on average
-    the gram negative bacteria might have lower MIC.
+- Streptomycin seems to be effective and practical for only four genera,
+  proteus (gram negative), bacillus (gram positive), and the two
+  staphylococci in the dataset (both gram positive). This seems to
+  indicate that practicality favors streptomycin use against gram
+  positive bacteria, although the eye test indicates that on average the
+  gram negative bacteria might have lower MIC.
 
 Which of your visuals above (1 through 5) is **most effective** at
 helping to answer this question?
 
--   The dot plot (1) was easily most effective at answering this
-    question.
+- The dot plot (1) was easily most effective at answering this question.
 
 Why?
 
--   It was easy to have a visualization where data is separated between
-    gram positive and negative, whereas it was only indicated by shape
-    with others, which would've been harder to read.
+- It was easy to have a visualization where data is separated between
+  gram positive and negative, whereas it was only indicated by shape
+  with others, which would’ve been harder to read.
 
--   Having all bacteria colored was nice, especially given that there
-    are few enough bacteria in the dataset where colors are
-    distinguishable. It was also fortunate that their order is one such
-    that similar colors are from similar strains (e.g. staphylococci).
+- Having all bacteria colored was nice, especially given that there are
+  few enough bacteria in the dataset where colors are distinguishable.
+  It was also fortunate that their order is one such that similar colors
+  are from similar strains (e.g. staphylococci).
 
 #### Guiding Question 2
 
 In 1974 *Diplococcus pneumoniae* was renamed *Streptococcus pneumoniae*,
 and in 1984 *Streptococcus fecalis* was renamed *Enterococcus fecalis*
-[2].
+\[2\].
 
 > Why was *Diplococcus pneumoniae* was renamed *Streptococcus
 > pneumoniae*?
 
 *Observations* - What is your response to the question above?
 
--   Against various antibiotics, they receive very similar MIC ratings.
+- Against various antibiotics, they receive very similar MIC ratings.
 
--   They are all gram positive.
+- They are all gram positive.
 
 Which of your visuals above (1 through 5) is **most effective** at
 helping to answer this question?
 
--   My scatterplot (2) was most effective at answering this question.
+- My scatterplot (2) was most effective at answering this question.
 
 Why?
 
--   It contains information about both their MIC and gram grades.
-    Visualizations 3 and 5 target the number of/kind of antibiotics that
-    are worthy for human treatment, and were designed to answer
-    questions more in the line of "how practical is"x" antibiotic
-    against "y" bacteria. Visualization 1 makes it difficult to see
-    diplococcus pneumoniae since it is so close to streptococci, but it
-    it were distinguishable then perhaps visualization 1 would be in
-    contention. Visualization 4 is certainly a winner, because the
-    heatmap's pattern for diplococcus pneumoniae echoes what can be seen
-    for two of the three streptococci very similarly. On the other hand,
-    it didn't answer the question of whether they were gram positive or
-    gram negative, so I decided that visualization 2 helped me answer
-    the question best.
+- It contains information about both their MIC and gram grades.
+  Visualizations 3 and 5 target the number of/kind of antibiotics that
+  are worthy for human treatment, and were designed to answer questions
+  more in the line of “how practical is”x” antibiotic against “y”
+  bacteria. Visualization 1 makes it difficult to see diplococcus
+  pneumoniae since it is so close to streptococci, but it it were
+  distinguishable then perhaps visualization 1 would be in contention.
+  Visualization 4 is certainly a winner, because the heatmap’s pattern
+  for diplococcus pneumoniae echoes what can be seen for two of the
+  three streptococci very similarly. On the other hand, it didn’t answer
+  the question of whether they were gram positive or gram negative, so I
+  decided that visualization 2 helped me answer the question best.
 
 # References
 
 <!-- -------------------------------------------------- -->
 
-[1] Neomycin in skin infections: A new topical antibiotic with wide
+\[1\] Neomycin in skin infections: A new topical antibiotic with wide
 antibacterial range and rarely sensitizing. Scope. 1951;3(5):4-7.
 
-[2] Wainer and Lysen, "That's Funny..." *American Scientist* (2009)
+\[2\] Wainer and Lysen, “That’s Funny…” *American Scientist* (2009)
 [link](https://www.americanscientist.org/article/thats-funny)
