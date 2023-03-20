@@ -24,7 +24,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category    | Needs Improvement                                                                                                | Satisfactory                                                                                                               |
-|-------------------|-----------------------------|-------------------------|
+|-------------------|----------------------------|-------------------------|
 | Effort      | Some task **q**'s left unattempted                                                                               | All task **q**'s attempted                                                                                                 |
 | Observed    | Did not document observations, or observations incorrect                                                         | Documented correct observations based on analysis                                                                          |
 | Supported   | Some observations not clearly supported by analysis                                                              | All observations clearly supported by analysis (table, graph, etc.)                                                        |
@@ -40,7 +40,8 @@ All the deliverables stated in the rubrics above are due **at midnight** before 
 
 ```{r setup}
 library(tidyverse)
-
+library(readxl)
+library(httr)
 ```
 
 *Background*: [COVID-19](https://en.wikipedia.org/wiki/Coronavirus_disease_2019) is the disease caused by the virus SARS-CoV-2. In 2020 it became a global pandemic, leading to huge loss of life and tremendous disruption to society. The New York Times (as of writing) publishes up-to-date data on the progression of the pandemic across the United States---we will study these data in this challenge.
@@ -229,7 +230,9 @@ Now that we've done the hard work of loading and wrangling the data, we can fina
 ```{r q5-task}
 ## TASK: Normalize cases and deaths
 df_normalized <-
-  df_data
+  df_data %>%
+    mutate(cases_per100k = (cases/population)*100000, deaths_per100k = (deaths/population) * 100000)
+df_normalized
 ```
 
 You may use the following test to check your work.
@@ -278,19 +281,70 @@ Before turning you loose, let's complete a couple guided EDA tasks.
 
 ```{r q6-task}
 ## TASK: Compute mean and sd for cases_per100k and deaths_per100k
+mean_cases = mean(df_normalized$cases_per100k, na.rm = TRUE)
+mean_deaths = mean(df_normalized$deaths_per100k, na.rm = TRUE)
+
+sd_cases = sd(df_normalized$cases_per100k, na.rm = TRUE)
+sd_deaths = sd(df_normalized$deaths_per100k, na.rm = TRUE)
+
+mean_cases
+sd_cases
+
+mean_deaths
+sd_deaths
 ```
 
 ### **q7** Find the top 10 counties in terms of `cases_per100k`, and the top 10 in terms of `deaths_per100k`. Report the population of each county along with the per-100,000 counts. Compare the counts against the mean values you found in q6. Note any observations.
 
 ```{r q7-task}
+## Find the most recent date for cumulative statistics, this way each county is
+## only included once
+df_date_sorted <- df_normalized %>%
+                    arrange(desc(date))
+most_recent_date = df_date_sorted$date[1]
+most_recent_date
 ## TASK: Find the top 10 max cases_per100k counties; report populations as well
+df_cases_sorted <- head(df_date_sorted %>% filter(date == most_recent_date) %>%
+                    arrange(desc(cases_per100k)) %>%
+                      select(state, county, population, cases_per100k), 10)
+df_cases_sorted
 
 ## TASK: Find the top 10 deaths_per100k counties; report populations as well
+df_deaths_sorted <- head(df_date_sorted %>% filter(date == most_recent_date) %>%
+                    arrange(desc(deaths_per100k)) %>%
+                      select(state, county, population, deaths_per100k), 10)
+df_deaths_sorted
+
+## Check maxes to ensure the sorting is correct
+max(df_normalized$deaths_per100k, na.rm = TRUE)
+max(df_normalized$cases_per100k, na.rm = TRUE)
 ```
 
 **Observations**:
 
--   (Note your observations here!)
+-   One county managed to achieve a ratio of 192156.86 cases per 100000 people, meaning more than 100% of people would contract COVID-19 according to the ratio (but not necessarily in reality).
+    -   The ratio of cases per 100,000 people being greater than 1 implies that the number of cases exceeds the population; since cases are counted cumulatively, it could be that many people got COVID more than once and were double counted
+
+    -   Another reason for this discrepancy is that the population estimate for this county may have been reflected poorly by the census and there may have been many unreported individuals
+-   The number of deaths per 100,000 individuals hovers around 1000 at most. We could extrapolate this data to per 100 to estimate that COVID-19 has a \<1% mortality rate; though this would be an approximation.
+-   The max deaths per 100,000 people are roughly 6 standard deviations from the mean number of deaths per 100,000 people. While these may appear to be outliers (and they may still be), their distance from the mean may be motivated by the way the mean and standard deviation were calculated. Because there is data for each country for a series of dates, the earlier death and case tolls also contribute to the mean, and have equal weight to later tolls. Thus there are deaths/cases that are double counted because the data is cumulative.
+
+```{r}
+new_df <- df_date_sorted %>% filter(date == most_recent_date)
+mean_cases_total = mean(new_df$cases_per100k, na.rm = TRUE)
+mean_deaths_total = mean(new_df$deaths_per100k, na.rm = TRUE)
+
+sd_cases_total = sd(new_df$cases_per100k, na.rm = TRUE)
+sd_deaths_total = sd(new_df$deaths_per100k, na.rm = TRUE)
+
+mean_cases_total
+sd_cases_total
+
+mean_deaths_total
+sd_deaths_total
+```
+
+Now it is easier to see that the average number of cumulative deaths is much higher than computed with the whole timeline, as are the average number of cumulative cases.
 
 ## Self-directed EDA
 
@@ -311,6 +365,64 @@ Before turning you loose, let's complete a couple guided EDA tasks.
 
 **DO YOUR OWN ANALYSIS HERE**
 
+```{r}
+cali <- df_normalized %>%
+          filter(state == "California")
+
+min_max_cali <- cali %>%
+  filter(cases_per100k %in% c(max(cali$cases_per100k, na.rm = TRUE), 
+                              min(cali$cases_per100k, na.rm = TRUE)))
+
+## The min county is LA and the max county is Imperial
+
+cali %>%
+  filter(county %in% c("San Bernardino", "Imperial", "Los Angeles")) %>%
+    ggplot() +
+    scale_y_log10(labels = scales::label_number_si()) +
+    geom_line(aes(date, cases_per100k, color = county)) +
+    scale_color_discrete(name = "County") +
+    theme_minimal() +
+    labs(
+      x = "Date",
+      y = "Cases (per 100,000 persons)"
+    )
+  
+  
+
+```
+
+Observations and motivations for further exploration:
+
+-   My county does not seem to be significantly far off in COVID-19 cases per 100,000 people from the maximum in California. Based on the number of maskless individuals in my county throughout the pandemic, I'm not shocked. Then again, the county with the least cases per 100,000 individuals is also not very far off of Imperial either. This might mean that the cases per 100,000's standard deviation is relatively small.
+
+-   What about the deaths per 100,000 cases?
+
+-   What about the exact differences in cases per 100,000 for my county versus Imperial county?
+
+    ```{r}
+    cali %>%
+      filter(county %in% c("San Bernardino", "Imperial", "Los Angeles")) %>%
+        ggplot() +
+        scale_y_log10(labels = scales::label_number_si()) +
+        geom_line(aes(date, deaths_per100k, color = county)) +
+        scale_color_discrete(name = "County") +
+        theme_minimal() +
+        labs(
+          x = "Date",
+          y = "Deaths (per 100,000 persons)"
+        )
+    ```
+
+    Observations:
+
+-   All three counties that are plotted follow a similar trend, where Imperial has the most deaths per 100,000 people whereas Los Angeles and San Bernardino stick roughly together.
+
+-   Los Angeles is the most inhabited county in the United States. How does that influence its statistics as compared to smaller counties? Does the size of LA county have anything to do with the answer to the previous question? San Bernardino county is the largest county by area in the US. How does its area come into play? In other words, what would population per square kilometer versus cases per 100,000 people look like? Perhaps visualizing that would be a more normalized metric than date versus deaths per 100,000 people.
+
+Punchline:
+
+-   Despite not being the largest or most populous county in California, Imperial County has the highest cases per 100,000 people and deaths per 100,000 people ratios in all of California. I originally expected that it would be Los Angeles county since case and death tolls were so high, but I hadn't considered how much LA county's massive populace would normalize those tolls.
+
 ### Aside: Some visualization tricks
 
 <!-- ------------------------- -->
@@ -319,20 +431,6 @@ These data get a little busy, so it's helpful to know a few `ggplot` tricks to h
 
 ```{r ma-example}
 ## NOTE: No need to change this; just an example
-df_normalized %>%
-  filter(state == "Massachusetts") %>%
-
-  ggplot(
-    aes(date, cases_per100k, color = fct_reorder2(county, date, cases_per100k))
-  ) +
-  geom_line() +
-  scale_y_log10(labels = scales::label_number_si()) +
-  scale_color_discrete(name = "County") +
-  theme_minimal() +
-  labs(
-    x = "Date",
-    y = "Cases (per 100,000 persons)"
-  )
 ```
 
 *Tricks*:
