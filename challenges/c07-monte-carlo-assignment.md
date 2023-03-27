@@ -200,19 +200,30 @@ df_q1 <- data.frame(idx = 1:n,
                     y = ry,
                     in_circle = ifelse(sqrt(1 - rx^2) >= ry, 1, 0))
 df_q1 <- df_q1 %>%
-  mutate(stat = 4*cumsum(in_circle)/idx)
+  mutate(stat = 4*in_circle)
 # Generate the data
+df_q1 <- df_q1 %>%
+  mutate(mean = cumsum(stat) / idx)
 ```
 
 ### **q2** Using your data in `df_q1`, estimate $\pi$.
 
 ``` r
 ## TASK: Estimate pi using your data from q1
-pi_est <- last(df_q1$stat)
+pi_est <- mean(df_q1$stat)
 pi_est
 ```
 
-    ## [1] 3.15128
+    ## [1] 3.1376
+
+``` r
+q95 <- qnorm( 1 - (1 - 0.95) / 2)
+mean <- pi_est
+sd <- sd(df_q1$stat)
+sd
+```
+
+    ## [1] 1.64496
 
 # Quantifying Uncertainty
 
@@ -226,10 +237,6 @@ to assess your $\pi$ estimate.
 ### **q3** Using a CLT approximation, produce a confidence interval for your estimate of $\pi$. Make sure you specify your confidence level. Does your interval include the true value of $\pi$? Was your chosen sample size sufficiently large so as to produce a trustworthy answer?
 
 ``` r
-q95 <- qnorm( 1 - (1 - 0.95) / 2)
-mean <- df_q1$stat
-sd <- sd(c(df_q1$x, df_q1$y))
-  
 df_aug <- df_q1 %>%
   mutate(
     se = sd / sqrt(n),
@@ -237,7 +244,7 @@ df_aug <- df_q1 %>%
     hi = mean + q95 * se
   )
 df_aug %>%
-  ggplot(aes(x)) +
+  ggplot(aes(idx)) +
   geom_hline(yintercept = pi, linetype = 2) +
   geom_errorbar(aes(
     ymin = lo,
@@ -257,12 +264,12 @@ df_aug %>%
 **Observations**:
 
 - Does your interval include the true value of $\pi$?
-  - No
+  - Yes
 - What confidence level did you choose?
   - 95
 - Was your sample size $n$ large enough? Why do you say that?
-  - My sample size n was not large enough because Pi was primarily not
-    in the 95% confidence interval I generated.
+  - My sample size n was large enough to capture pi in every interval
+    after a certain point, so I believe it sufficient.
 
 # References
 
