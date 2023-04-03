@@ -201,9 +201,9 @@ df_samples %>%
   - It is difficult to say what the exact shape of the distribution
     should be; it peaks in the middle, so it looks slightly normal, but
     it would be hard to argue for that with some strengths erring on the
-    lower end of the spectrum. So it could be left-skewed as well. Given
-    the number of data points, it would be hard to draw conclusions
-    about the shape.
+    lower end of the spectrum. So it could be left-skewed like a
+    lognormal as well. Given the number of data points, it would be hard
+    to draw conclusions about the shape.
 - Assuming the scopus is the strength of an individual part made from
   this aluminum alloy, is the observed variability real or induced?
   - The variability is real because it is not an introduced property of
@@ -261,12 +261,12 @@ as the `mean()` of an indicator. Use the same strategy here.
 df_q2 <- df_samples %>%
   mutate(stat = g_break(strength))
 df_q2 <- df_q2 %>%
-  mutate(indicator = stat >= 0)
+  mutate(indicator = stat <= 0)
 p_failure <- mean(df_q2$indicator)/nrow(df_q2)
 p_failure
 ```
 
-    ## [1] 0.04
+    ## [1] 0
 
 ``` r
 nrow(df_q2)
@@ -277,7 +277,7 @@ nrow(df_q2)
 **Observations**:
 
 - Does this estimate satisfy `POF < 0.03`?
-  - No
+  - Yes
 - Is this estimate of the probability of failure trustworthy? Why or why
   not?
   - This estimate is not very trustworthy because it is drawing from a
@@ -368,9 +368,9 @@ df_norm_pof
 ```
 
     ## # A tibble: 1 × 3
-    ##   pof_lo pof_est pof_hi
-    ##    <dbl>   <dbl>  <dbl>
-    ## 1 0.0129   0.022 0.0311
+    ##    pof_lo pof_est pof_hi
+    ##     <dbl>   <dbl>  <dbl>
+    ## 1 0.00746   0.015 0.0225
 
 - Assuming your scopus is the probability of failure `POF` defined
   above, does your estimate exhibit real variability, induced
@@ -505,7 +505,7 @@ df_samples %>%
     ## # A tibble: 1 × 6
     ##   term   .lower .estimate .upper .alpha .method   
     ##   <chr>   <dbl>     <dbl>  <dbl>  <dbl> <chr>     
-    ## 1 pof   0.00128    0.0179 0.0469   0.05 percentile
+    ## 1 pof   0.00107    0.0188 0.0508   0.05 percentile
 
 **Observations**:
 

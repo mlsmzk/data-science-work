@@ -26,7 +26,7 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category    | Needs Improvement                                                                                                | Satisfactory                                                                                                               |
-|------------------|-----------------------------|-------------------------|
+|--------------|----------------------------|-------------------------------|
 | Effort      | Some task **q**'s left unattempted                                                                               | All task **q**'s attempted                                                                                                 |
 | Observed    | Did not document observations, or observations incorrect                                                         | Documented correct observations based on analysis                                                                          |
 | Supported   | Some observations not clearly supported by analysis                                                              | All observations clearly supported by analysis (table, graph, etc.)                                                        |
@@ -86,7 +86,7 @@ df_samples %>%
 -   What is the mean strength of the material, approximately?
     -   The mean strength is about 40000 psi.
 -   To what extent can you tell what shape the distribution of the data has?
-    -   It is difficult to say what the exact shape of the distribution should be; it peaks in the middle, so it looks slightly normal, but it would be hard to argue for that with some strengths erring on the lower end of the spectrum. So it could be left-skewed as well. Given the number of data points, it would be hard to draw conclusions about the shape.
+    -   It is difficult to say what the exact shape of the distribution should be; it peaks in the middle, so it looks slightly normal, but it would be hard to argue for that with some strengths erring on the lower end of the spectrum. So it could be left-skewed like a lognormal as well. Given the number of data points, it would be hard to draw conclusions about the shape.
 -   Assuming the scopus is the strength of an individual part made from this aluminum alloy, is the observed variability real or induced?
     -   The variability is real because it is not an introduced property of aluminum that we study but rather one that occurs naturally.
 
@@ -131,7 +131,7 @@ $$\text{POF} \equiv \mathbb{P}[g \leq 0].$$
 df_q2 <- df_samples %>%
   mutate(stat = g_break(strength))
 df_q2 <- df_q2 %>%
-  mutate(indicator = stat >= 0)
+  mutate(indicator = stat <= 0)
 p_failure <- mean(df_q2$indicator)/nrow(df_q2)
 p_failure
 
@@ -141,7 +141,7 @@ nrow(df_q2)
 **Observations**:
 
 -   Does this estimate satisfy `POF < 0.03`?
-    -   No
+    -   Yes
 -   Is this estimate of the probability of failure trustworthy? Why or why not?
     -   This estimate is not very trustworthy because it is drawing from a sample size of only 25. The central limit theorem dictates that as the number of samples approaches infinity, our probability will be more accurate.
 -   Can you confidently conclude that `POF < 0.03`? Why or why not.
