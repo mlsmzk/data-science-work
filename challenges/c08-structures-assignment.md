@@ -1,65 +1,73 @@
-Structural Safety
-================
-Miles Mezaki
-202X-XX-XX
+---
+editor_options: 
+  markdown: 
+    wrap: 72
+---
 
-- <a href="#grading-rubric" id="toc-grading-rubric">Grading Rubric</a>
-  - <a href="#individual" id="toc-individual">Individual</a>
-  - <a href="#due-date" id="toc-due-date">Due Date</a>
-- <a href="#setup" id="toc-setup">Setup</a>
-  - <a
-    href="#q1-visualize-the-strength-data-with-a-histogram-answer-the-questions-below"
-    id="toc-q1-visualize-the-strength-data-with-a-histogram-answer-the-questions-below"><strong>q1</strong>
-    Visualize the strength data with a histogram. Answer the questions
-    below.</a>
-- <a href="#assessing-structural-safety"
-  id="toc-assessing-structural-safety">Assessing Structural Safety</a>
-  - <a href="#structural-model" id="toc-structural-model">Structural
-    model</a>
-    - <a
-      href="#q2-using-the-observations-in-df_samples-and-the-structural-model-g_break-estimate-the-probability-of-failure"
-      id="toc-q2-using-the-observations-in-df_samples-and-the-structural-model-g_break-estimate-the-probability-of-failure"><strong>q2</strong>
-      Using the observations in <code>df_samples</code> and the structural
-      model <code>g_break()</code>, estimate the probability of failure.</a>
-  - <a href="#material-property-model"
-    id="toc-material-property-model">Material property model</a>
-    - <a
-      href="#q3-fit-a-lognormal-distribution-to-the-strength-data-using-the-fitdistr-function"
-      id="toc-q3-fit-a-lognormal-distribution-to-the-strength-data-using-the-fitdistr-function"><strong>q3</strong>
-      Fit a lognormal distribution to the strength data using the
-      <code>fitdistr()</code> function.</a>
-    - <a
-      href="#q4-complete-the-code-below-by-1-choosing-a-monte-carlo-sample-size-n_monte_carlo-2-extracting-the-estimated-parameters-from-q3-and-3-computing-the-limit-state-value-g--g_break-answer-the-questions-under-observations-below"
-      id="toc-q4-complete-the-code-below-by-1-choosing-a-monte-carlo-sample-size-n_monte_carlo-2-extracting-the-estimated-parameters-from-q3-and-3-computing-the-limit-state-value-g--g_break-answer-the-questions-under-observations-below"><strong>q4</strong>
-      Complete the code below by 1. choosing a Monte Carlo sample size
-      <code>n_monte_carlo</code>, 2. extracting the estimated parameters from
-      q3, and 3. computing the limit state value <code>g = g_break()</code>.
-      Answer the questions under <em>observations</em> below.</a>
-  - <a href="#a-different-way-to-compute-the-pof"
-    id="toc-a-different-way-to-compute-the-pof">A different way to compute
-    the POF</a>
-    - <a
-      href="#q5-finish-the-following-function-by-computing-the-pof-with-plnorm-answer-the-questions-under-observations-below"
-      id="toc-q5-finish-the-following-function-by-computing-the-pof-with-plnorm-answer-the-questions-under-observations-below"><strong>q5</strong>
-      Finish the following function by computing the POF with
-      <code>plnorm()</code>. Answer the questions under <em>observations</em>
-      below.</a>
-  - <a href="#quantifying-sampling-uncertainty"
-    id="toc-quantifying-sampling-uncertainty">Quantifying sampling
-    uncertainty</a>
-    - <a
-      href="#q6-the-code-below-estimates-a-bootstrap-ci-on-your-pof-estimate-answer-the-questions-under-observations-below"
-      id="toc-q6-the-code-below-estimates-a-bootstrap-ci-on-your-pof-estimate-answer-the-questions-under-observations-below"><strong>q6</strong>
-      The code below estimates a bootstrap CI on your POF estimate. Answer the
-      questions under <em>observations</em> below.</a>
+# Structural Safety
+
+Miles Mezaki 202X-XX-XX
+
+-   <a href="#grading-rubric" id="toc-grading-rubric">Grading Rubric</a>
+    -   <a href="#individual" id="toc-individual">Individual</a>
+    -   <a href="#due-date" id="toc-due-date">Due Date</a>
+-   <a href="#setup" id="toc-setup">Setup</a>
+    -   <a
+        href="#q1-visualize-the-strength-data-with-a-histogram-answer-the-questions-below"
+        id="toc-q1-visualize-the-strength-data-with-a-histogram-answer-the-questions-below"><strong>q1</strong>
+        Visualize the strength data with a histogram. Answer the
+        questions below.</a>
+-   <a href="#assessing-structural-safety"
+    id="toc-assessing-structural-safety">Assessing Structural Safety</a>
+    -   <a href="#structural-model" id="toc-structural-model">Structural
+        model</a>
+        -   <a
+            href="#q2-using-the-observations-in-df_samples-and-the-structural-model-g_break-estimate-the-probability-of-failure"
+            id="toc-q2-using-the-observations-in-df_samples-and-the-structural-model-g_break-estimate-the-probability-of-failure"><strong>q2</strong>
+            Using the observations in <code>df_samples</code> and the
+            structural model <code>g_break()</code>, estimate the
+            probability of failure.</a>
+    -   <a href="#material-property-model"
+        id="toc-material-property-model">Material property model</a>
+        -   <a
+            href="#q3-fit-a-lognormal-distribution-to-the-strength-data-using-the-fitdistr-function"
+            id="toc-q3-fit-a-lognormal-distribution-to-the-strength-data-using-the-fitdistr-function"><strong>q3</strong>
+            Fit a lognormal distribution to the strength data using the
+            <code>fitdistr()</code> function.</a>
+        -   <a
+            href="#q4-complete-the-code-below-by-1-choosing-a-monte-carlo-sample-size-n_monte_carlo-2-extracting-the-estimated-parameters-from-q3-and-3-computing-the-limit-state-value-g--g_break-answer-the-questions-under-observations-below"
+            id="toc-q4-complete-the-code-below-by-1-choosing-a-monte-carlo-sample-size-n_monte_carlo-2-extracting-the-estimated-parameters-from-q3-and-3-computing-the-limit-state-value-g--g_break-answer-the-questions-under-observations-below"><strong>q4</strong>
+            Complete the code below by 1. choosing a Monte Carlo sample
+            size <code>n_monte_carlo</code>, 2. extracting the estimated
+            parameters from q3, and 3. computing the limit state value
+            <code>g = g_break()</code>. Answer the questions under
+            <em>observations</em> below.</a>
+    -   <a href="#a-different-way-to-compute-the-pof"
+        id="toc-a-different-way-to-compute-the-pof">A different way to
+        compute the POF</a>
+        -   <a
+            href="#q5-finish-the-following-function-by-computing-the-pof-with-plnorm-answer-the-questions-under-observations-below"
+            id="toc-q5-finish-the-following-function-by-computing-the-pof-with-plnorm-answer-the-questions-under-observations-below"><strong>q5</strong>
+            Finish the following function by computing the POF with
+            <code>plnorm()</code>. Answer the questions under
+            <em>observations</em> below.</a>
+    -   <a href="#quantifying-sampling-uncertainty"
+        id="toc-quantifying-sampling-uncertainty">Quantifying sampling
+        uncertainty</a>
+        -   <a
+            href="#q6-the-code-below-estimates-a-bootstrap-ci-on-your-pof-estimate-answer-the-questions-under-observations-below"
+            id="toc-q6-the-code-below-estimates-a-bootstrap-ci-on-your-pof-estimate-answer-the-questions-under-observations-below"><strong>q6</strong>
+            The code below estimates a bootstrap CI on your POF
+            estimate. Answer the questions under <em>observations</em>
+            below.</a>
 
 *Purpose*: Most real problems have multiple sources of uncertainty mixed
 together. Untangling these different sources can be challenging, even on
-a conceptual level. In this challenge we’ll study a simple problem of
+a conceptual level. In this challenge we'll study a simple problem of
 structural safety, and use this small case study to untangle sources of
 sampling and Monte Carlo uncertainty.
 
-*Note*: In this challenge I provide a lot of stub-code; you won’t have
+*Note*: In this challenge I provide a lot of stub-code; you won't have
 to do too much coding. This is because I want you to *focus on answering
 the conceptual questions*. The most important questions in this
 challenge are: *What sources of uncertainty are you accounting for? What
@@ -79,12 +87,12 @@ define how you will be graded, both on an individual and team basis.
 <!-- ------------------------- -->
 
 | Category    | Needs Improvement                                                                                                | Satisfactory                                                                                                               |
-|-------------|------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| Effort      | Some task **q**’s left unattempted                                                                               | All task **q**’s attempted                                                                                                 |
+|--------------|----------------------------|-------------------------------|
+| Effort      | Some task **q**'s left unattempted                                                                               | All task **q**'s attempted                                                                                                 |
 | Observed    | Did not document observations, or observations incorrect                                                         | Documented correct observations based on analysis                                                                          |
 | Supported   | Some observations not clearly supported by analysis                                                              | All observations clearly supported by analysis (table, graph, etc.)                                                        |
 | Assessed    | Observations include claims not supported by the data, or reflect a level of certainty not warranted by the data | Observations are appropriately qualified by the quality & relevance of the data and (in)conclusiveness of the support      |
-| Specified   | Uses the phrase “more data are necessary” without clarification                                                  | Any statement that “more data are necessary” specifies which *specific* data are needed to answer what *specific* question |
+| Specified   | Uses the phrase "more data are necessary" without clarification                                                  | Any statement that "more data are necessary" specifies which *specific* data are needed to answer what *specific* question |
 | Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability                                 | Code sufficiently close to the [style guide](https://style.tidyverse.org/)                                                 |
 
 ## Due Date
@@ -135,11 +143,11 @@ By Jorge Stolfi - Own work, CC BY-SA 3.0,
 <https://commons.wikimedia.org/w/index.php?curid=24499456>
 
 *Strength* is a measure of how much internal stress an object can
-survive: A higher strength means a stronger material. This challenge’s
+survive: A higher strength means a stronger material. This challenge's
 data are very simple: They are (synthetic) observations of ultimate
 tensile strength (UTS) on individual samples of the same aluminum alloy.
 The experiments were carried out following the higest standards of
-experimental rigor, so you should consider these values to be the “true”
+experimental rigor, so you should consider these values to be the "true"
 breaking strength for each sample.
 
 ``` r
@@ -194,20 +202,20 @@ df_samples %>%
 
 **Observations**:
 
-- What is the mean strength of the material, approximately?
-  - The mean strength is about 40000 psi.
-- To what extent can you tell what shape the distribution of the data
-  has?
-  - It is difficult to say what the exact shape of the distribution
-    should be; it peaks in the middle, so it looks slightly normal, but
-    it would be hard to argue for that with some strengths erring on the
-    lower end of the spectrum. So it could be left-skewed like a
-    lognormal as well. Given the number of data points, it would be hard
-    to draw conclusions about the shape.
-- Assuming the scopus is the strength of an individual part made from
-  this aluminum alloy, is the observed variability real or induced?
-  - The variability is real because it is not an introduced property of
-    aluminum that we study but rather one that occurs naturally.
+-   What is the mean strength of the material, approximately?
+    -   The mean strength is about 40000 psi.
+-   To what extent can you tell what shape the distribution of the data
+    has?
+    -   It is difficult to say what the exact shape of the distribution
+        should be; it peaks in the middle, so it looks slightly normal,
+        but it would be hard to argue for that with some strengths
+        erring on the lower end of the spectrum. So it could be
+        left-skewed like a lognormal as well. Given the number of data
+        points, it would be hard to draw conclusions about the shape.
+-   Assuming the scopus is the strength of an individual part made from
+    this aluminum alloy, is the observed variability real or induced?
+    -   The variability is real because it is not an introduced property
+        of aluminum that we study but rather one that occurs naturally.
 
 # Assessing Structural Safety
 
@@ -230,8 +238,8 @@ The following code chunk sets up a structural model: We are considering
 a rectangular bar under uniaxial tensile load (as pictured above). A
 larger cross-sectional area `A` is capable of surviving a greater load
 `L`, but a larger `A` is a heavier (more expensive) structure. The
-internal stress is approximately `sigma = L / A`—we simply compare this
-quantity against the strength.
+internal stress is approximately `sigma = L / A`---we simply compare
+this quantity against the strength.
 
 I pick particular values for `A, L` and package all the information in
 the *limit state function* `g_break`:
@@ -276,19 +284,19 @@ nrow(df_q2)
 
 **Observations**:
 
-- Does this estimate satisfy `POF < 0.03`?
-  - Yes
-- Is this estimate of the probability of failure trustworthy? Why or why
-  not?
-  - This estimate is not very trustworthy because it is drawing from a
-    sample size of only 25. The central limit theorem dictates that as
-    the number of samples approaches infinity, our probability will be
-    more accurate.
-- Can you confidently conclude that `POF < 0.03`? Why or why not.
-  - No, because the estimated POF is 0.04 with a methodology that isn’t
-    trustworthy, so it could very well be that POF \< 0.03 in reality.
-    For an engineering project, it might be safer to conclude that it is
-    too close to have this bar structure.
+-   Does this estimate satisfy `POF < 0.03`?
+    -   Yes
+-   Is this estimate of the probability of failure trustworthy? Why or
+    why not?
+    -   This estimate is not very trustworthy because it is drawing from
+        a sample size of only 25. The central limit theorem dictates
+        that as the number of samples approaches infinity, our
+        probability will be more accurate.
+-   Can you confidently conclude that `POF < 0.03`? Why or why not.
+    -   No, because the estimated POF is 0.04 with a methodology that
+        isn't trustworthy, so it could very well be that POF \< 0.03 in
+        reality. For an engineering project, it might be safer to
+        conclude that it is too close to have this bar structure.
 
 ## Material property model
 
@@ -296,12 +304,12 @@ nrow(df_q2)
 
 Since we have so few physical samples, we will fit a distribution to
 model the material property. This will give us the means to draw
-“virtual samples” and use those to estimate the POF.
+"virtual samples" and use those to estimate the POF.
 
 ### **q3** Fit a lognormal distribution to the strength data using the `fitdistr()` function.
 
 *Note*: In this challenge I generated the `strength` data from a
-`lognormal` distribution; if you didn’t know that fact, then the choice
+`lognormal` distribution; if you didn't know that fact, then the choice
 of distribution would be an *additional* source of uncertainty!
 
 *Hint 1*: We learned how to do this in `e-stat08-fit-dist`.
@@ -324,7 +332,7 @@ df_fit
     ## 1 meanlog 10.6       0.00175
     ## 2 sdlog    0.00875   0.00124
 
-Once you’ve successfully fit a model for the strength, you can estimate
+Once you've successfully fit a model for the strength, you can estimate
 the probability of failure by drawing samples from the fitted
 distribution.
 
@@ -372,31 +380,32 @@ df_norm_pof
     ##     <dbl>   <dbl>  <dbl>
     ## 1 0.00746   0.015 0.0225
 
-- Assuming your scopus is the probability of failure `POF` defined
-  above, does your estimate exhibit real variability, induced
-  variability, or both?
-  - Since we choose the Montecarlo size, the variability is partially
-    induced now. The real variability of aluminum from before persists.
-- Does this confidence interval imply that `POF < 0.03`?
-  - Yes
-- Compare this probability with your estimate from q2; is it more or
-  less trustworthy?
-  - It is likely more trustworthy since the Montecarlo number is 1000
-    compared to the 25 from the sample data.
-- Does the confidence interval above account for uncertainty arising
-  from the *Monte Carlo approximation*? Why or why not?
-  - No; the code only concerns itself with finding confidence on the
-    estimate of the POF. No work is done to account for the uncertainty
-    of the Monte Carlo approximation.
-- Does the confidence interval above account for uncertainty arising
-  from *limited physical tests* (`df_samples`)? Why or why not?
-  - No; the std. error computed in the lognormal fit was neglected.
-- What could you do to tighten up the confidence interval?
-  - Account for the aforementioned uncertainties in the computation
-  - Increase the Monte Carlo number
-- Can you *confidently* conclude that `POF < 0.03`? Why or why not?
-  - No; there are more uncertainties that weren’t accounted for that may
-    push the POF above 0.03
+-   Assuming your scopus is the probability of failure `POF` defined
+    above, does your estimate exhibit real variability, induced
+    variability, or both?
+    -   Since we choose the Montecarlo size, the variability is
+        partially induced now. The real variability of aluminum from
+        before persists.
+-   Does this confidence interval imply that `POF < 0.03`?
+    -   Yes
+-   Compare this probability with your estimate from q2; is it more or
+    less trustworthy?
+    -   It is likely more trustworthy since the Montecarlo number is
+        1000 compared to the 25 from the sample data.
+-   Does the confidence interval above account for uncertainty arising
+    from the *Monte Carlo approximation*? Why or why not?
+    -   No; the code only concerns itself with finding confidence on the
+        estimate of the POF. No work is done to account for the
+        uncertainty of the Monte Carlo approximation.
+-   Does the confidence interval above account for uncertainty arising
+    from *limited physical tests* (`df_samples`)? Why or why not?
+    -   No; the std. error computed in the lognormal fit was neglected.
+-   What could you do to tighten up the confidence interval?
+    -   Account for the aforementioned uncertainties in the computation
+    -   Increase the Monte Carlo number
+-   Can you *confidently* conclude that `POF < 0.03`? Why or why not?
+    -   No; there are more uncertainties that weren't accounted for that
+        may push the POF above 0.03
 
 ## A different way to compute the POF
 
@@ -404,7 +413,7 @@ df_norm_pof
 
 Monte Carlo is a *general* way to estimate probabilities, but it
 introduces approximation error. It turns out that, for the simple
-problem we’re studying, we can compute the probability directly using
+problem we're studying, we can compute the probability directly using
 the CDF. Note that for our structural safety problem, we have
 
 $$\text{POF} = \mathbb{P}[g \leq 0] = \mathbb{P}[S \leq L / A] = \text{CDF}_S(L/A).$$
@@ -414,7 +423,7 @@ Since
 can use `plnorm` to compute the probability of failure without Monte
 Carlo as
 `POF = plnorm(L/A, meanlog = strength_meanlog, sdlog = strength_sdlog)`.
-Let’s combine this idea with the fitted distribution to estimate the
+Let's combine this idea with the fitted distribution to estimate the
 POF.
 
 ### **q5** Finish the following function by computing the POF with `plnorm()`. Answer the questions under *observations* below.
@@ -456,22 +465,24 @@ df_samples %>% estimate_pof()
 
 **Observations**:
 
-- How does this estimate compare with your Monte Carlo estimate above?
-  - The estimated POF is larger, but only slightly; they are almost the
-    same.
-- Does this estimate have any uncertainty due to *Monte Carlo
-  approximation*? Why or why not?
-  - No. The code doesn’t rely on Monte Carlo approximation in any way.
-- With the scopus as the `POF`, would uncertainty due to *Monte Carlo
-  approximation* be induced or real?
-  - Induced
-- Does this estimate have any uncertainty due to *limited physical
-  tests*? Why or why not?
-  - Yes; there isn’t any accountability for the errors introduced in
-    fitdistr which produced approximates from the limited physical tests
-- With the scopus as the `POF`, would uncertainty due to *limited
-  physical tests* be induced or real?
-  - The uncertainty would be real.
+-   How does this estimate compare with your Monte Carlo estimate above?
+    -   The estimated POF is larger, but only slightly; they are almost
+        the same.
+-   Does this estimate have any uncertainty due to *Monte Carlo
+    approximation*? Why or why not?
+    -   No. The code doesn't rely on Monte Carlo approximation in any
+        way.
+-   With the scopus as the `POF`, would uncertainty due to *Monte Carlo
+    approximation* be induced or real?
+    -   Induced
+-   Does this estimate have any uncertainty due to *limited physical
+    tests*? Why or why not?
+    -   Yes; there isn't any accountability for the errors introduced in
+        fitdistr which produced approximates from the limited physical
+        tests
+-   With the scopus as the `POF`, would uncertainty due to *limited
+    physical tests* be induced or real?
+    -   The uncertainty would be real.
 
 ## Quantifying sampling uncertainty
 
@@ -480,8 +491,8 @@ df_samples %>% estimate_pof()
 Using `plnorm()` gets rid of Monte Carlo error, but we still have
 uncertainty due to limited physical testing. Often we can use a CLT
 approximation to construct a confidence interval. However, with
-`plnorm()` we can’t use a CLT approximation because it does not follow
-the assumptions of the central limit theorem (it’s not a sum of iid
+`plnorm()` we can't use a CLT approximation because it does not follow
+the assumptions of the central limit theorem (it's not a sum of iid
 random variables). Instead, we can use the *bootstrap* to approximate a
 confidence interval via resampling.
 
@@ -509,14 +520,15 @@ df_samples %>%
 
 **Observations**:
 
-- Does the confidence interval above account for uncertainty arising
-  from *Monte Carlo approximation* of the POF? Why or why not?
-  - No. There is no Monte Carlo involvement in the above confidence
-    interval.
-- Does the confidence interval above account for uncertainty arising
-  from *limited physical tests* (`df_samples`)? Why or why not?
-  - Yes; bootstrapping makes it so that more simulated physical tests
-    are accounted for in the computation of the confidence interval.
-- Can you confidently conclude that `POF < 0.03`? Why or why not?
-  - No. The upper estimate is 0.04, so one cannot say with confidence
-    that POF \< 0.03
+-   Does the confidence interval above account for uncertainty arising
+    from *Monte Carlo approximation* of the POF? Why or why not?
+    -   No. There is no Monte Carlo involvement in the above confidence
+        interval.
+-   Does the confidence interval above account for uncertainty arising
+    from *limited physical tests* (`df_samples`)? Why or why not?
+    -   Yes; bootstrapping makes it so that more simulated physical
+        tests are accounted for in the computation of the confidence
+        interval.
+-   Can you confidently conclude that `POF < 0.03`? Why or why not?
+    -   No. The upper estimate is 0.04, so one cannot say with
+        confidence that POF \< 0.03

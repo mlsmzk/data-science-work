@@ -1,7 +1,7 @@
 ---
 title: "US Income"
 author: "Miles Mezaki"
-date: 2023-04-03
+date: 2023-04-09
 output:
   github_document:
     toc: true
@@ -26,7 +26,8 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 <!-- ------------------------- -->
 
 | Category    | Needs Improvement                                                                                                | Satisfactory                                                                                                               |
-|-------------------|-----------------------------|-------------------------|
+
+|------------------|-----------------------------|-------------------------|
 | Effort      | Some task **q**'s left unattempted                                                                               | All task **q**'s attempted                                                                                                 |
 | Observed    | Did not document observations, or observations incorrect                                                         | Documented correct observations based on analysis                                                                          |
 | Supported   | Some observations not clearly supported by analysis                                                              | All observations clearly supported by analysis (table, graph, etc.)                                                        |
@@ -52,7 +53,7 @@ library(tidyverse)
 
 ```{r q1-task}
 ## TODO: Give the filename for your copy of Table B01003
-filename_pop <- NA_character_
+filename_pop <- "data/ACSDT5Y2018.B01003-Data.csv"
 
 ## NOTE: No need to edit
 df_pop <-
@@ -85,7 +86,7 @@ This means that for cases listed as `*****` the US Census Bureau recommends trea
 
 ```{r q2-task}
 ## TODO: Give the filename for your copy of Table S1903
-filename_income <- NA_character_
+filename_income <- "data/ACSST5Y2018.S1903-Data.csv"
 
 ## NOTE: No need to edit
 df_income <-
@@ -118,16 +119,22 @@ df_q3 <-
   df_income %>%
   select(
     Geography,
-    contains("geographic"),
-    contains("median") & matches("\\d-person families")
+    contains("Geographic"),
+    # This will select only the numeric d-person family columns;
+    # it will ignore the annotation columns
+    contains("median") & matches("\\d-person families") & !contains("Annotation of")
   ) %>%
   mutate(across(contains("median"), as.numeric)) %>%
 ## TODO: Pivot the data, rename the columns
-  pivot_longer(
+    pivot_longer(
+    cols = -c(Geography, `Geographic Area Name`),
     names_to = c(".value", "category"),
-    names_pattern = "\\d-person families",
-    cols = everything()
-  )
+    names_pattern = c("(Margin of Error|Estimate).*(\\d-person families)"),
+    values_drop_na = TRUE
+  ) %>%
+  rename("id" = "Geography", "geographic_area_name" = "Geographic Area Name", "income_moe" = "Margin of Error", "income_estimate" = "Estimate") %>%
+  glimpse()
+
 ```
 
 Use the following tests to check your work:
@@ -156,8 +163,19 @@ $$\text{MOE} = 1.645 \times \text{SE}.$$
 ### **q4** Convert the margin of error to standard error. Additionally, compute a 99% confidence interval on income, and normalize the standard error to `income_CV = income_SE / income_estimate`. Provide these columns with the names `income_SE, income_lo, income_hi, income_CV`.
 
 ```{r q4-task}
+q99 <- qnorm( 1 - (1 - 0.99) / 2 )
+q99
 
-df_q4
+df_q4 <-
+  df_q3 %>%
+    mutate(income_SE = income_moe / 1.645,
+           income_CV = income_SE / income_estimate,
+           income_lo = income_estimate - (q99 * income_SE),
+           income_hi = income_estimate + (q99 * income_SE))
+
+df_q4 %>%
+  filter(id == "0500000US01001", category == "2-person families") %>%
+    pull(income_lo)
 ```
 
 Use the following tests to check your work:
@@ -212,6 +230,8 @@ One last wrangling step: We need to join the two datasets so we can compare popu
 ```{r q5-task}
 ## TODO: Join df_q4 and df_pop by the appropriate column
 
+df_data <- df_q4 %>% full_join(df_pop, by = "id") %>%
+  rename("geographic_area_name" = "geographic_area_name.x")
 df_data
 ```
 
@@ -249,15 +269,16 @@ df_data %>%
 ```
 
 **Observations**:
-
--   Document your observations here.
-    -   (Your response here)
-    -   (Your response here)
-    -   ...
+-   In many counties of Boston, including Norfolk, Middlesex, Plymouth, and Worcester, the median household income for 2-person families was significantly lower than that of families with a larger household
+-   It's impossible to conclude anything meaningful about the median household income for 5 person families in Nantucket and Dukes counties since the interval is so large.
+    -   A similar observation can be made for 6-person families in Berkshire and Hampshire counties
+-   A general trend seems to be with more people in the household, the larger the confidence interval has to become to be 99% confident
 -   Can you confidently distinguish between household incomes in Suffolk county? Why or why not?
-    -   (Your response here)
+    -   No; if I were given the median household income of a family living in Suffolk county, I would not be able to place the size of the family. The confidence intervals on median income for different sized families overlap greatly in Suffolk county.
 -   Which counties have the widest confidence intervals?
-    -   (Your response here)
+    -   Nantucket for 5-person families, followed by Dukes
+    -   Berkshire and Hampshire for 6-person families with roughly the same width
+    -   For 2, 3, and 4 person families, Nantucket and Dukes seem to also have very wide intervals
 
 In the next task you'll investigate the relationship between population and uncertainty.
 
@@ -266,14 +287,18 @@ In the next task you'll investigate the relationship between population and unce
 *Hint*: Remember that standard error is a function of *both* variability (e.g. variance) and sample size.
 
 ```{r q7-task}
+df_data %>%
+  ggplot() +
+  geom_point(mapping = aes(x = population_estimate, y = income_SE, color = category))
 ```
 
 **Observations**:
 
 -   What *overall* trend do you see between `SE` and population? Why might this trend exist?
-    -   (Your response here)
+
+    -   They seem to be inversely proportionally related. As a population size increases, so too might the sample size. Since the standard error is inversely proportional to the sample size, then it will decrease as population increases.
 -   What does this *overall* trend tell you about the relative ease of studying small vs large counties?
-    -   (Your response here)
+    -   With large counties like Suffolk or Los Angeles, there is a huge population to gather data from. It is relatively easier to get a lower standard error when the sample is so large. On the other hand, smaller counties (by population) inherently have a smaller population to sample from. Thus any variance present in the data cannot be mitigated as much as it would be by a large sample.
 
 # Going Further
 
@@ -284,12 +309,31 @@ Now it's your turn! You have income data for every county in the United States: 
 ### **q8** Pose your own question about the data. Create a visualization (or table) here, and document your observations.
 
 ```{r q8-task}
-## TODO: Pose and answer your own question about the data
+## Does confidence interval size correlate with family size category?
+
+df_data %>%
+  filter(!is.na(category)) %>%
+  mutate(ci_width = abs(income_hi - income_lo)) %>%
+  ggplot() +
+  geom_boxplot(mapping = aes(x = category, y = ci_width), width = 0.4) +
+  scale_y_continuous(labels = function(x) format(x, scientific = FALSE)) +
+  theme_minimal() +
+    labs(
+      x = "Category",
+      y = "CI Width of Income Estimate (2021 USD$)"
+    )
 ```
+
+**Question:**
+
+Does confidence interval size correlate with family size category?
 
 **Observations**:
 
 -   Document your observations here
+
+    -   The median confidence interval tends to increase with the size of the family, meaning if this relationship is causal, you can only be 99% confident that the estimated income for a certain group will lie in a very large range.
+    -   A great number of outliers are present at all family categories. This may be an issue having to do with population size of each county, i.e. the variance of the standard error will be better or worse normalized depending on population size.
 
 Ideas:
 
