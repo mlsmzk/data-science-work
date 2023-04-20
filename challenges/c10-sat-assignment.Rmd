@@ -31,6 +31,7 @@ Thomas MacFarland.
 
 ```{r setup}
 library(tidyverse)
+library(MASS)
 library(readxl)
 library(broom)
 library(modelr)
@@ -267,28 +268,40 @@ Finally, let's use the bootstrap to perform the same test using
 
 ```{r q5-task}
 ## TODO: Use the bootstrap to compute a confidence interval for corr[high_GPA, univ_GPA]
+##estimate_corr_ci <- function(df) {
+  ## Fit the distribution
+##  high <- df %>%
+##    pull(high_GPA)
+##  univ <- df %>%
+##    pull(univ_GPA)
+  
+##  cor.test(high, univ)
+##}
+
+
 df_bootstrap <- df_composite %>%
   bootstraps(times = 1000) %>%
   mutate(
     estimates = map(
       splits,
-      ~ analysis(.x) %>% 
-        pull(x) %>% 
-        fitdistr(densfun = "normal") %>%
+      ~ analysis(.x) %>%
+        pull(high_GPA) %>% fitdistr(densfun = "normal") %>%
         tidy()
+  ##      estimate_corr_ci() %>%
+  ##      tidycustom()
     )
-  )
-
-df_bootstrap %>%
+  ) %>%
   int_pctl(estimates)
 ```
 
 **Observations**:
 
 -   How does your estimate from q5 compare with your estimate from q4?
-    -   (Your response here)
+    -   The estimate is similar.
 -   How does your CI from q5 compare with your CI from q4?
-    -   (Your response here)
+    -   The confidence interval is smaller, meaning we can be more
+        confident than we were before that the estimate is around where
+        our bootstrap makes it out to be.
 
 *Aside*: When you use two different approximations to compute the same
 quantity and get similar results, that's an *encouraging sign*. Such an
