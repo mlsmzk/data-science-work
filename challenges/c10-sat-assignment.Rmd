@@ -267,14 +267,19 @@ Finally, let's use the bootstrap to perform the same test using
 
 ```{r q5-task}
 ## TODO: Use the bootstrap to compute a confidence interval for corr[high_GPA, univ_GPA]
-df_samples %>%
+df_bootstrap <- df_composite %>%
   bootstraps(times = 1000) %>%
   mutate(
     estimates = map(
       splits,
-      ~ analysis(.x) %>% estimate_pof() %>% tidycustom()
+      ~ analysis(.x) %>% 
+        pull(x) %>% 
+        fitdistr(densfun = "normal") %>%
+        tidy()
     )
-  ) %>%
+  )
+
+df_bootstrap %>%
   int_pctl(estimates)
 ```
 
@@ -346,7 +351,7 @@ tools rather than do it by hand.
 
 ```{r q6-task}
 ## TODO: Fit a model of univ_GPA on the predictor both_SAT
-fit_basic <- NA
+fit_basic <- lm(univ_GPA ~ both_SAT, data = df_composite)
 
 ## NOTE: The following computes confidence intervals on regression coefficients
 fit_basic %>%
@@ -360,9 +365,10 @@ fit_basic %>%
 
 -   What is the confidence interval on the coefficient of `both_SAT`? Is
     this coefficient significantly different from zero?
-    -   (Your response here)
+    -   The confidence interval is [0.00198..., 0.00349...]. This is not
+        significantly different from zero.
 -   By itself, how well does `both_SAT` predict `univ_GPA`?
-    -   (Your response here)
+    -   Pretty poorly
 
 Remember from `e-model03-interp-warnings` that there are challenges with
 interpreting regression coefficients! Let's investigate that idea
@@ -371,20 +377,46 @@ further.
 ### **q7** Fit a model predicting `univ_GPA` using both `high_GPA` and `both_SAT`. Compare the prediction accuracy and hypothesis test results.
 
 ```{r q7-task}
-## TODO: Fit and assess models with predictors both_SAT + high_GPA, and high_GPA alone
+## TODO: Fit and assess models with predictor high_GPA alone
+fit_basic <- lm(univ_GPA ~ high_GPA, data = df_composite)
+
+## NOTE: The following computes confidence intervals on regression coefficients
+fit_basic %>%
+  tidy(
+    conf.int = TRUE,
+    conf.level = 0.99
+  )
+```
+
+```{r q7-task-p2}
+## TODO: Fit and assess models with predictors both_SAT + high_GPA
+fit_basic <- lm(univ_GPA ~ high_GPA + both_SAT, data = df_composite)
+
+fit_basic
+
+## NOTE: The following computes confidence intervals on regression coefficients
+fit_basic %>%
+  tidy(
+    conf.int = TRUE,
+    conf.level = 0.99
+  )
 ```
 
 **Observations**:
 
 -   How well do these models perform, compared to the one you built in
     q6?
-    -   (Your response here)
+    -   It seems to compare worse compared to q6
 -   What is the confidence interval on the coefficient of `both_SAT`
     when including `high_GPA` as a predictor?? Is this coefficient
     significantly different from zero?
-    -   (Your response here)
+    -   The confidence interval on both_SAT is [-.00022..., 0.001807...]
+    -   This is not significantly different from 0
 -   How do the hypothesis test results compare with the results in q6?
-    -   (Your response here)
+    -   In all cases, we reject the alternative hypothesis because the p
+        value is greater than .01, so we cannot even be 99% confident
+        that high school GPA or both SAT and high school GPA are
+        significant predictors of a student's university GPA.
 
 ## Synthesize
 
@@ -398,11 +430,19 @@ Before closing, let's synthesize a bit from the analyses above.
 
 -   Between `both_SAT` and `high_GPA`, which single variable would you
     choose to predict `univ_GPA`? Why?
-    -   (Your response here)
+    -   High_GPA would be a better predictor, I think, because the
+        linear regression fitting both indicates that both_SAT has
+        virtually zero impact relative to high_GPA in predicting
+        univ_GPA.
 -   Is `both_SAT` an effective predictor of `univ_GPA`? What specific
     pieces of evidence do you have in favor of `both_SAT` being
     effective? What specific pieces of evidence do you have against?
-    -   (Your response here)
+    -   No. Both_SAT by the correlation test shows some efficacy of
+        measuring univ_GPA, but this is just an indication of
+        correlation and not causality. On the other hand, our linear
+        regression model indicates that Both_SAT does not a have a
+        significant effect on univ_GPA. This is backed by a p value that
+        is much greater than the desired 0.01.
 
 # End Notes
 
