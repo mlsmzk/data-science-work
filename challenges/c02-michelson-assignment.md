@@ -170,9 +170,9 @@ df_michelson %>%
 
 **Observations**: - While distinctness and n naturally match Michelson’s
 data, the mean velocity that I compute is slightly different. This may
-be attributed to a difference in technology; whether it be the measuring
-equipment used to capture the velocities, or the computers used to
-calculate the mean velocities.
+be attributed to human calculation vs. computer computation, or it could
+be that Michelson was rounding purposefully or to use 5 significant
+figures.
 
 The `Velocity` values in the dataset are the speed of light *in air*;
 Michelson introduced a couple of adjustments to estimate the speed of
@@ -367,7 +367,12 @@ df_q2 %>%
 ``` r
 df_q2 %>%
   ggplot() +
-  geom_point(mapping = aes(x = Date, y = VelocityVacuum, color = Temp))
+  geom_point(mapping = aes(x = Date, y = VelocityVacuum, color = Temp))  + 
+  labs(
+    x = "Date of Measurement (1879)",
+    y = "Velocity (in Vacuum) [km/s]",
+    title = "Light speed in a vacuum throughout Michelson's experiment"
+  )
 ```
 
 ![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
@@ -375,7 +380,8 @@ df_q2 %>%
 ``` r
 df_q2 %>%
   ggplot() +
-  geom_point(mapping = aes(x = Date, y = VelocityVacuum, color = Distinctness))
+  geom_boxplot(mapping = aes(x = Distinctness, y = VelocityVacuum)) +
+  geom_point(mapping = aes(x = Distinctness, y = LIGHTSPEED_VACUUM), color = "red")
 ```
 
 ![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
@@ -383,7 +389,8 @@ df_q2 %>%
 ``` r
 df_q2 %>%  
 ggplot() +
-  geom_density(mapping = aes(x = VelocityVacuum, color = Distinctness))
+  geom_point(mapping = aes(x = Temp, y = VelocityVacuum)) +
+  geom_line(mapping = aes(x = Temp, y = LIGHTSPEED_VACUUM), color = "red")
 ```
 
 ![](c02-michelson-assignment_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
@@ -392,31 +399,29 @@ ggplot() +
 
 - Graph 1
   - Significantly more measurements with distinctness 2 or 3 were
-    measured than distinctness 1. If distinctness has an effect on the
-    measured velocity, it could explain why the error was so great.
+    measured than distinctness 1.
+  - The vacuum velocity for distinctness 1 measurements does not exceed
+    300,000 km/s as the clearer distinctness values do.
 - Graph 2
   - There was a different number of measurements taken on each day. I’m
     not a physicist, but I would want to collect the same number of
     samples every time that I repeat my experiment to control for
-    external conditions influencing my data. This scatterplot also
-    seemingly indicates little effect of temperature on the “vacuum”
-    velocity, but lower temperatures seem to have slightly lower speeds
-    on average.
+    external conditions influencing my data.
+  - The velocity varies widely no matter the date; this suggests that
+    the date of measurement does not influence the speed of light in a
+    noticeable way if at all. This aligns with what I would expect.
 - Graph 3
-  - Again we can see the scarcity of distinctness 1 results, but their
-    prevalence in one segment of time may indicate a problem with the
-    measuring apparatus; why aren’t there measurements of distinctness 1
-    outside that timeframe? It seems that distinctness 1 averages the
-    lowest temperature, with distinctness 3 second lowest, then
-    distinctness 2. Since the speed of light in actuality is 151 km/s
-    slower, I wonder if this lack of category biased the data.
+  - The interquartile range is concentrated higher than the actual speed
+    of light.
+  - The speed of light is lower than even the minimum non-outlier for
+    every distinctness.
+  - This suggests that distinctness did not affect the speed of light in
+    a noticeable way.
 - Graph 4
-  - Since the density graph normalizes based on the number of samples, I
-    thought it might be a good idea for the distinctness categories.
-    Both distinctness 2 and 3 have a slight right skew to their curves,
-    whereas distinctness 1 has a slight left skew. Looking at the other
-    visualizations, this would be expected. Unfortunately this seemingly
-    does not illustrate new information about the data.
+  - Most velocity measurements, seemingly regardless of temperature,
+    were measured to be above the real speed of light. This suggests
+    that temperature did not influence the velocity measurement
+    noticeably.
 
 ## Bibliography
 

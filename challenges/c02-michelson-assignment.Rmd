@@ -120,9 +120,9 @@ df_michelson %>%
 
 **Observations**: - While distinctness and n naturally match Michelson's
 data, the mean velocity that I compute is slightly different. This may
-be attributed to a difference in technology; whether it be the measuring
-equipment used to capture the velocities, or the computers used to
-calculate the mean velocities.
+be attributed to human calculation vs. computer computation, or it could
+be that Michelson was rounding purposefully or to use 5 significant
+figures.
 
 The `Velocity` values in the dataset are the speed of light *in air*;
 Michelson introduced a couple of adjustments to estimate the speed of
