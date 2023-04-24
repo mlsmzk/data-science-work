@@ -1,6 +1,6 @@
 RMS Titanic
 ================
-(Your name here)
+Miles Mezaki
 2020-
 
 - <a href="#grading-rubric" id="toc-grading-rubric">Grading Rubric</a>
@@ -87,10 +87,10 @@ library(tidyverse)
 ```
 
     ## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.2 ──
-    ## ✔ ggplot2 3.4.0      ✔ purrr   1.0.1 
-    ## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-    ## ✔ tidyr   1.2.1      ✔ stringr 1.5.0 
-    ## ✔ readr   2.1.3      ✔ forcats 0.5.2 
+    ## ✔ ggplot2 3.4.0     ✔ purrr   1.0.1
+    ## ✔ tibble  3.1.8     ✔ dplyr   1.1.0
+    ## ✔ tidyr   1.3.0     ✔ stringr 1.5.0
+    ## ✔ readr   2.1.3     ✔ forcats 1.0.0
     ## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
     ## ✖ dplyr::filter() masks stats::filter()
     ## ✖ dplyr::lag()    masks stats::lag()
@@ -128,6 +128,7 @@ glimpse(df_titanic)
 
 - Class, sex, age, and whether they survived are the variables of the
   titanic dataframe
+- n indicates the number of people in each category
 
 ### **q2** Skim the [Wikipedia article](https://en.wikipedia.org/wiki/RMS_Titanic) on the RMS Titanic, and look for a total count of souls aboard. Compare against the total computed below. Are there any differences? Are those differences large or small? What might account for those differences?
 
@@ -151,9 +152,9 @@ df_titanic %>% summarize(total = sum(n))
     a significant difference, but there were 23 or more passengers
     unaccounted for in the dataframe.
 - If yes, what might account for those differences?
-  - The death toll was not completely clear, and recording issues such
-    as the use of aliases and trip cancellations made the roster of
-    passengers difficult to sort.
+  - Possible reasons: the death toll was not completely clear, and
+    recording issues such as the use of aliases and trip cancellations
+    could have made the roster of passengers difficult to sort.
 
 ### **q3** Create a plot showing the count of persons who *did* survive, along with aesthetics for `Class` and `Sex`. Document your observations below.
 
@@ -163,7 +164,7 @@ df_titanic %>% summarize(total = sum(n))
 ## TASK: Visualize counts against `Class` and `Sex`
 df_titanic %>%
   ggplot() +
-  geom_col(mapping = aes(x = Survived, y = n, fill = Sex)) +
+  geom_col(mapping = aes(x = Survived, y = n, fill = Sex), position = "dodge") +
   facet_grid(~ Class)
 ```
 
@@ -171,7 +172,7 @@ df_titanic %>%
 
 **Observations**:
 
-- Many more females survived than men did in classes 1-3, and more
+- Many more females survived than men did in classes 1 and 2, and more
   females survived than died even in the crew. The reason for this
   discrepancy could be the disproportionate number of men compared to
   females among Titanic staff.
@@ -224,12 +225,13 @@ df_prop
 
 ``` r
 df_prop %>%
+  filter(Survived == "Yes") %>%
   ggplot() +
-  geom_col(mapping = aes(x = Survived, y = Prop, fill = Sex)) +
+  geom_col(mapping = aes(x = Sex, y = Prop)) +
   facet_grid(~ Class)
 ```
 
-    ## Warning: Removed 4 rows containing missing values (`position_stack()`).
+    ## Warning: Removed 2 rows containing missing values (`position_stack()`).
 
 ![](c01-titanic-assignment_files/figure-gfm/q4-task-1.png)<!-- -->
 
@@ -268,12 +270,13 @@ names(myColors) <- levels(df_titanic$Age)
 custom_colors <- scale_colour_manual(name = "Age", values = myColors)
 
 df_prop %>%
+  filter(Survived == "Yes") %>%
   ggplot() +
-  geom_col(mapping = aes(x = Survived, y = Prop, fill = Sex, color = Age)) +
+  geom_col(mapping = aes(x = Age, y = Prop, fill = Sex), position = "dodge") +
   facet_grid(~ Class) + custom_colors
 ```
 
-    ## Warning: Removed 4 rows containing missing values (`position_stack()`).
+    ## Warning: Removed 2 rows containing missing values (`geom_col()`).
 
 ![](c01-titanic-assignment_files/figure-gfm/q5-task-1.png)<!-- -->
 
