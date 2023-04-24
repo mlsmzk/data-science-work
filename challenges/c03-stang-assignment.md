@@ -239,7 +239,48 @@ print("Very good!")
 
 ``` r
 ##
+df_stang_long %>%
+  glimpse()
 ```
+
+    ## Rows: 26
+    ## Columns: 5
+    ## $ thick <dbl> 0.022, 0.022, 0.022, 0.022, 0.022, 0.022, 0.032, 0.032, 0.032, 0…
+    ## $ alloy <chr> "al_24st", "al_24st", "al_24st", "al_24st", "al_24st", "al_24st"…
+    ## $ angle <int> 0, 45, 90, 0, 45, 90, 0, 45, 90, 0, 45, 90, 0, 45, 90, 0, 45, 90…
+    ## $ E     <dbl> 10600, 10700, 10500, 10600, 10500, 10700, 10400, 10400, 10300, 1…
+    ## $ mu    <dbl> 0.321, 0.329, 0.310, 0.323, 0.331, 0.323, 0.329, 0.318, 0.322, 0…
+
+``` r
+df_stang_long %>%
+  head()
+```
+
+    ## # A tibble: 6 × 5
+    ##   thick alloy   angle     E    mu
+    ##   <dbl> <chr>   <int> <dbl> <dbl>
+    ## 1 0.022 al_24st     0 10600 0.321
+    ## 2 0.022 al_24st    45 10700 0.329
+    ## 3 0.022 al_24st    90 10500 0.31 
+    ## 4 0.022 al_24st     0 10600 0.323
+    ## 5 0.022 al_24st    45 10500 0.331
+    ## 6 0.022 al_24st    90 10700 0.323
+
+``` r
+df_stang_long %>%
+  filter(alloy != "al_24st")
+```
+
+    ## # A tibble: 0 × 5
+    ## # … with 5 variables: thick <dbl>, alloy <chr>, angle <int>, E <dbl>, mu <dbl>
+
+``` r
+df_stang_long$thick
+```
+
+    ##  [1] 0.022 0.022 0.022 0.022 0.022 0.022 0.032 0.032 0.032 0.032 0.032 0.032
+    ## [13] 0.064 0.064 0.064 0.064 0.064 0.064 0.081 0.081 0.081 0.081 0.081 0.081
+    ## [25] 0.081 0.081
 
 **Observations**:
 
@@ -256,6 +297,7 @@ print("Very good!")
 - What thicknesses were tested?
   - Thicknesses of 0.022, 0.032, 0.064, and 0.081 were tested.
 - Is poisson’s ratio (mu) independent of angle?
+  - Mu is seemingly independent of angle.
 
 ## Visualize
 
@@ -267,7 +309,7 @@ print("Very good!")
 ## TASK: Investigate your question from q1 here
 df_stang_long %>%
   ggplot() +
-    geom_boxplot(mapping = aes(x = cut_interval(angle, n=3), y = mu))
+  geom_boxplot(mapping = aes(x = cut_interval(angle, n=3), y = mu))
 ```
 
 ![](c03-stang-assignment_files/figure-gfm/q3-task-1.png)<!-- -->
