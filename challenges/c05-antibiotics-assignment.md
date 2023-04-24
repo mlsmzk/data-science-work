@@ -1,7 +1,7 @@
 Antibiotics
 ================
-(Your name here)
-2020-
+Miles Mezaki
+2023-04-23
 
 *Purpose*: Creating effective data visualizations is an *iterative*
 process; very rarely will the first graph you make be the most
@@ -184,7 +184,7 @@ your other visuals.
 df_longer %>%
   ggplot(aes(shape = gram)) +
   geom_point(mapping = aes(x = bacteria, y = MIC, color = antibiotic)) +
-  geom_point(mapping = aes(x = bacteria, y = 0.1), color = "black") +
+  geom_hline(yintercept = 0.1, color = "black") +
   scale_y_log10() +
   labs(y="MIC") +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
@@ -198,7 +198,7 @@ In this visual you may show a *subset* of the variables (`penicillin`,
 `streptomycin`, `neomycin`, `gram`), but you must still show *all 16
 bacteria*.
 
-Note that your visual mustsf be *qualitatively different* from *all* of
+Note that your visual must be *qualitatively different* from *all* of
 your other visuals.
 
 ``` r
@@ -248,11 +248,15 @@ your other visuals.
 
 ``` r
 # WRITE YOUR CODE HERE
-df_longer %>%
-    filter(MIC <= 0.1) %>%
-      ggplot() +
-      geom_point(mapping = aes(x = bacteria, y = MIC, color = antibiotic)) +
-      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+df_antibiotics %>%
+    mutate(treatable = (penicillin <= 0.1) | (streptomycin <= 0.1) | (neomycin <= 0.1)) %>%
+    ggplot() +
+    geom_point(mapping = aes(x = bacteria, y = pmin(penicillin, streptomycin, neomycin), color = bacteria)) +
+    geom_hline(yintercept = 0.1, color = 'black') +
+    theme(axis.text.x = element_blank()) +
+    xlab("Gram") + 
+    ylab("Treatable") +
+    facet_grid( treatable ~ gram)
 ```
 
 ![](c05-antibiotics-assignment_files/figure-gfm/q1.5-1.png)<!-- -->
@@ -328,8 +332,13 @@ and in 1984 *Streptococcus fecalis* was renamed *Enterococcus fecalis*
 *Observations* - What is your response to the question above?
 
 - Against various antibiotics, they receive very similar MIC ratings.
+  [Similar MIC ratings can suggest similar biological
+  characteristics](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC6428495/),
+  and so could be an indicator of an underlying driver of this change.
 
-- They are all gram positive.
+- They are all gram positive; [members who belong to this family cause
+  different infections than those in the gram negative
+  family.](https://medlineplus.gov/lab-tests/gram-stain/)
 
 Which of your visuals above (1 through 5) is **most effective** at
 helping to answer this question?
