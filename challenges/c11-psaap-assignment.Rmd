@@ -175,11 +175,11 @@ c(mse_baseline, mse_cheat, mse_nonphysical)
 -   Which model is *most accurate*? Which is *least accurate*?
     -   According to the metric of MSE, the cheat fit is most accurate. Whereas the nonphysical model is least accurate.
 -   What *Category* of variable is `avg_T`? Why is it such an effective predictor?
-    -   avg_T is a continuous numeric variable (dependent as well). It's an effective predictor because T_norm is calculated using avg_T linearly (i.e. T_norm = (avg_T - T_f)/T_f = 1/T_f \* avg_T - 1.
+    -   avg_T is an output variable. It's an effective predictor because T_norm is calculated using avg_T linearly (i.e. T_norm = (avg_T - T_f)/T_f = 1/T_f \* avg_T - 1.
 -   Would we have access to `avg_T` if we were trying to predict a *new* value of `T_norm`? Is `avg_T` a valid predictor?
     -   No. Since T_norm is computed using the current average (i.e. average of plane fluid temperature points in the dataset),
 -   What *Category* of variable is `idx`? Does it have any physical meaning?
-    -   idx is a discrete numeric variable that is independent of other variables in the dataset. It doesn't have any physical meaning, but just indicates the trial number.
+    -   idx is a discrete numeric variable that is independent of other variables in the dataset because it's metadata. It doesn't have any physical meaning, but just indicates the trial number.
 
 ### **q4** Use a combination of EDA and train-validation error to build a model by selecting *reasonable* predictors for the `formula` argument. Document your findings under *observations* below. Try to build the most accurate model you can!
 
@@ -349,15 +349,15 @@ bind_rows(
 **Observations**:
 
 -   Which model tends to be more accurate? How can you tell from this predicted-vs-actual plot?
-    -   (Your response here)
+    -   A predicted vs. actual plot should have a slope of roughly 1. As we can see, both just x and my q4 fit are pretty accurate predictors. The x fit might be slightly more accurate.
 -   Which model tends to be *more confident* in its predictions? Put differently, which model has *narrower prediction intervals*?
-    -   (Your response here)
+    -   The just x fit has more confident predictions
 -   How many predictors does the `fit_simple` model need in order to make a prediction? What about your model `fit_q4`?
-    -   (Your response here)
+    -   fit_simple only needs one predictor: x. On the other hand, my fit_q4 has four predictors: d_p, rho_f, k_f, and T_f.
 
 Based on these results, you might be tempted to always throw every reasonable variable into the model. For some cases, that might be the best choice. However, some variables might be *outside our control*; for example, variables involving human behavior cannot be fully under our control. Other variables may be *too difficult to measure*; for example, it is *in theory* possible to predict the strength of a component by having detailed knowledge of its microstructure. However, it is *patently infeasible* to do a detailed study of *every single component* that gets used in an airplane.
 
-In both cases---human behavior and variable material properties---we would be better off treating those quantities as random variables. There are at least two ways we could treat these factors: 1. Explicitly model some inputs as random variables and construct a model that *propagates* that uncertainty from inputs to outputs, or 2. Implicitly model the uncontrolled the uncontrolled variables by not including them as predictors in the model, and instead relying on the error term $\epsilon$ to represent these unaccounted factors. You will pursue strategy 2. in the following Case Study.
+In both cases---human behavior and variable material properties---we would be better off treating those quantities as random variables. There are at least two ways we could treat these factors: 1. Explicitly model some inputs as random variables and construct a model that *propagates* that uncertainty from inputs to outputs, or 2. Implicitly model the uncontrolled variables by not including them as predictors in the model, and instead relying on the error term $\epsilon$ to represent these unaccounted factors. You will pursue strategy 2. in the following Case Study.
 
 # Case Study: Predicting Performance Ranges
 
@@ -377,6 +377,24 @@ Your task is to use a regression analysis to deliver to the design team a *depen
 
 *Hint*: This problem will require you to *build a model* by choosing the appropriate variables to include in the analysis. Think about *which variables the design team can control*, and *which variables they have chosen to allow to vary*. You will also need to choose between computing a CI or PI for the design prediction.
 
+To start off, the variables they have allowed to vary are given in the following table.
+
+| Variable | Category | Meaning                          |
+|----------|----------|----------------------------------|
+| `N_p`    | Input    | Number of particles              |
+| `k_f`    | Input    | Turbulence level                 |
+| `T_f`    | Input    | Fluid inlet temp                 |
+| `rho_f`  | Input    | Fluid density                    |
+| `mu_f`   | Input    | Fluid viscosity                  |
+| `lam_f`  | Input    | Fluid conductivity               |
+| `C_fp`   | Input    | Fluid isobaric heat capacity     |
+| `rho_p`  | Input    | Particle density                 |
+| `d_p`    | Input    | Particle diameter                |
+| `C_pv`   | Input    | Particle isochoric heat capacity |
+| `h`      | Input    | Convection coefficient           |
+| `I_0`    | Input    | Radiation intensity              |
+| `eps_p`  | Input    | Radiation absorption coefficient |
+
 ```{r q6-task}
 # NOTE: No need to change df_design; this is the target the client
 #       is considering
@@ -388,22 +406,75 @@ pr_level <- 0.8
 #        use the validation data to check your uncertainty estimates, and 
 #        make a recommendation on a *dependable range* of values for T_norm
 #        at the point `df_design`
-fit_q6 <- NA
+df_sweep <-
+  map_dfr(
+    seq(1, 9, by = 1),
+    function(order) {
+      # Fit a temporary model
+      fit_tmp <-
+        lm(
+          data = df_train,
+          formula = T_norm ~ poly(U_0, order)
+        )
+
+      # Compute error on the Train and Validate sets
+      tibble(
+        error_Train = mse(fit_tmp, df_train),
+        error_Validate = mse(fit_tmp, df_validate),
+        order = order
+      )
+    }
+  ) %>%
+  pivot_longer(
+    names_to = c(".value", "source"),
+    names_sep = "_",
+    cols = matches("error")
+  )
+
+df_sweep %>%
+  ggplot(aes(order, error, color = source)) +
+  geom_line() +
+
+  scale_y_log10() +
+  scale_x_continuous(breaks = seq(1, 10, by = 1)) +
+  scale_color_discrete(name = "Method") +
+  coord_cartesian(ylim = c(1e-3, 1)) +
+  theme(legend.position = "bottom") +
+  labs(
+    x = "Polynomial Order",
+    y = "Mean Squared Error"
+  )
+
+fit_q6 <- 
+        lm(
+          data = df_train,
+          formula = T_norm ~ x + L + W + U_0
+        )
+
+rsquare(fit_q6, df_train)
+rsquare(fit_q6, df_validate)
+
+df_intervals_q6 <- 
+  add_uncertainties(model = fit_q6, data = df_design, interval = "prediction", prefix = "pi", level = 0.8)
+df_intervals_q6
+
+valid_and_in_pi <- sum((df_validate$T_norm >= 1.45685 & df_validate$T_norm <= 2.296426))/nrow(df_validate)
+valid_and_in_pi
 
 ```
 
 **Recommendation**:
 
 -   How much do you trust your model? Why?
-    -   (Your response here)
+    -   I don't trust my model a ton, but it's also an okay measure. The r-squared value for validation is roughly 67% for both the training and validation sets. This means that the model is not overfitted, but it's also not an incredible predictor of a future data point; realistically it would be wrong a decent proportion of the time. Roughly 2/3 of the output can be "explained" by the model I've given it.
 -   What kind of interval---confidence or prediction---would you use for this task, and why?
-    -   (Your response here)
+    -   Prediction. Confidence intervals estimate a statistic about a population--prediction intervals predict a statistic about a future member of the population.
 -   What fraction of validation cases lie within the interval you predict? How does this compare with `pr_level`?
-    -   (Your response here)
+    -   5% of the validation cases lie within the interval I predict. If the model were predicting the behavior of future cases well, it would probably be roughly 80%. However because the proportion of validation cases in the interval is so low, it is likely that my model is not adequately capturing the data.
 -   What interval for `T_norm` would you recommend the design team to plan around?
-    -   (Your response here)
+    -   Between 1.45685 and 2.296426
 -   Are there any other recommendations you would provide?
-    -   (Your response here)
+    -   It's a good idea to include safety factors to ensure the expected T_norm will never get dangerously close to the upper or lower bounds of its range.
 
 *Bonus*: One way you could take this analysis further is to recommend which other variables the design team should tightly control. You could do this by fixing values in `df_design` and adding them to the model. An exercise you could carry out would be to systematically test the variables to see which ones the design team should more tightly control.
 
