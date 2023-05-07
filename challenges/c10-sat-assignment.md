@@ -41,12 +41,9 @@ Miles Mezaki
       Use the function <code>cor.test()</code> to construct confidence
       intervals for <code>corr[high_GPA, univ_GPA</code> and
       <code>corr[both_SAT, univ_GPA]</code>. Answer the questions below.</a>
-    - <a
-      href="#q5-use-the-bootstrap-to-approximate-a-confidence-interval-for-corrhigh_gpa-univ_gpa-compare-your-resultsboth-the-estimate-and-confidence-intervalto-your-results-from-q4"
-      id="toc-q5-use-the-bootstrap-to-approximate-a-confidence-interval-for-corrhigh_gpa-univ_gpa-compare-your-resultsboth-the-estimate-and-confidence-intervalto-your-results-from-q4"><strong>q5</strong>
-      Use the bootstrap to approximate a confidence interval for
-      <code>corr[high_GPA, univ_GPA</code>. Compare your results—both the
-      estimate and confidence interval—to your results from q4.</a>
+    - <a href="#q5-use-the-bootstrap-to-approximate-a-confidence-interval"
+      id="toc-q5-use-the-bootstrap-to-approximate-a-confidence-interval"><strong>q5</strong>
+      Use the bootstrap to approximate a confidence interval.</a>
   - <a href="#view-2-modeling" id="toc-view-2-modeling">View 2: Modeling</a>
     - <a href="#hypothesis-testing-with-a-model"
       id="toc-hypothesis-testing-with-a-model">Hypothesis Testing with a
@@ -279,9 +276,11 @@ df_composite %>%
 **Observations**:
 
 - What relationship do `univ_GPA` and `both_SAT` exhibit?
-  - univ_GPA increases, so too does the SAT score
+  - univ_GPA increases, so too does the SAT score. But after a certain
+    threshold, the SAT score seemingly does not change much.
 - What relationship do `univ_GPA` and `high_GPA` exhibit?
-  - As univ_GPA increases, the high school GPA also increases
+  - As univ_GPA increases, the high school GPA also increases in a
+    relatively linear fashion.
 
 ### Hypothesis Testing with a Correlation Coefficient
 
@@ -425,10 +424,22 @@ cor.test(df_composite$both_SAT, df_composite$univ_GPA)
 Finally, let’s use the bootstrap to perform the same test using
 *different* assumptions.
 
-### **q5** Use the bootstrap to approximate a confidence interval for `corr[high_GPA, univ_GPA`. Compare your results—both the estimate and confidence interval—to your results from q4.
+### **q5** Use the bootstrap to approximate a confidence interval.
+
+Use the bootstrap to approximate a confidence interval for
+`cor[high_GPA, univ_GPA]`. Compare your results—both the estimate and
+confidence interval—to your results from q4.
+
+*Hint 1*. The `cor(x, y)` function computes the correlation between two
+variables `x` and `y`. You may find this more helpful than the
+`cor.test()` function we used above.
+
+*Hint 2*. You’ll find that the documentation for `int_pctl` has some
+**really** useful examples for this task!
 
 ``` r
-## TODO: Use the bootstrap to compute a confidence interval for corr[high_GPA, univ_GPA]
+## TODO: Complete the following helper function to do a bootstrap analysis
+
 ##estimate_corr_ci <- function(df) {
   ## Fit the distribution
 ##  high <- df %>%
@@ -440,29 +451,50 @@ Finally, let’s use the bootstrap to perform the same test using
 ##}
 
 
-df_bootstrap <- df_composite %>%
+#df_bootstrap <- df_composite %>%
+#  bootstraps(times = 1000) %>%
+#  mutate(
+#    estimates = map(
+#      splits,
+#      ~ analysis(.x) %>%
+#        pull(high_GPA) %>% fitdistr(densfun = "normal") %>%
+#        tidy()
+#  ##      estimate_corr_ci() %>%
+#  ##      tidycustom()
+#    )
+#  ) %>%
+#  int_pctl(estimates)
+
+corr_high_GPA <- function(split) {
+  dat  <- analysis(split)
+  tibble(
+    term = "cor",
+    estimate =  cor(dat$high_GPA, dat$univ_GPA)# %>%
+        #pull(high_GPA) %>% fitdistr(densfun = "normal") %>%
+        #tidy() # TODO: Complete this code
+  )
+}
+
+## Use the bootstrap to approximate a CI
+df_composite %>%
   bootstraps(times = 1000) %>%
-  mutate(
-    estimates = map(
-      splits,
-      ~ analysis(.x) %>%
-        pull(high_GPA) %>% fitdistr(densfun = "normal") %>%
-        tidy()
-  ##      estimate_corr_ci() %>%
-  ##      tidycustom()
-    )
-  ) %>%
+  mutate(estimates = map(splits, corr_high_GPA)) %>%
   int_pctl(estimates)
 ```
+
+    ## # A tibble: 1 × 6
+    ##   term  .lower .estimate .upper .alpha .method   
+    ##   <chr>  <dbl>     <dbl>  <dbl>  <dbl> <chr>     
+    ## 1 cor    0.700     0.778  0.847   0.05 percentile
 
 **Observations**:
 
 - How does your estimate from q5 compare with your estimate from q4?
   - The estimate is similar.
 - How does your CI from q5 compare with your CI from q4?
-  - The confidence interval is smaller, meaning we can be more confident
-    than we were before that the estimate is around where our bootstrap
-    makes it out to be.
+  - The confidence interval is around the same width.
+- This is reassuring because we’ve achieved a *very* similar interval
+  with two different methods.
 
 *Aside*: When you use two different approximations to compute the same
 quantity and get similar results, that’s an *encouraging sign*. Such an
@@ -527,6 +559,12 @@ tools rather than do it by hand.
 ## TODO: Fit a model of univ_GPA on the predictor both_SAT
 fit_basic <- lm(univ_GPA ~ both_SAT, data = df_composite)
 
+rsquare(fit_basic, df_composite)
+```
+
+    ## [1] 0.4687834
+
+``` r
 ## NOTE: The following computes confidence intervals on regression coefficients
 fit_basic %>%
   tidy(
@@ -545,10 +583,11 @@ fit_basic %>%
 
 - What is the confidence interval on the coefficient of `both_SAT`? Is
   this coefficient significantly different from zero?
-  - The confidence interval is \[0.00198…, 0.00349…\]. This is not
-    significantly different from zero.
+  - The confidence interval is \[0.00198…, 0.00349…\]. Since it excludes
+    0, this is statistically significant.
 - By itself, how well does `both_SAT` predict `univ_GPA`?
-  - Pretty poorly
+  - both_SAT, based on the R-squared value of .46, isn’t a great
+    predictor of univ_GPA.
 
 Remember from `e-model03-interp-warnings` that there are challenges with
 interpreting regression coefficients! Let’s investigate that idea
@@ -558,10 +597,10 @@ further.
 
 ``` r
 ## TODO: Fit and assess models with predictor high_GPA alone
-fit_basic <- lm(univ_GPA ~ high_GPA, data = df_composite)
+fit_high <- lm(univ_GPA ~ high_GPA, data = df_composite)
 
 ## NOTE: The following computes confidence intervals on regression coefficients
-fit_basic %>%
+fit_high %>%
   tidy(
     conf.int = TRUE,
     conf.level = 0.99
@@ -575,10 +614,16 @@ fit_basic %>%
     ## 2 high_GPA       0.675    0.0534     12.6  1.18e-22    0.535     0.815
 
 ``` r
-## TODO: Fit and assess models with predictors both_SAT + high_GPA
-fit_basic <- lm(univ_GPA ~ high_GPA + both_SAT, data = df_composite)
+rsquare(fit_high, df_composite)
+```
 
-fit_basic
+    ## [1] 0.6077187
+
+``` r
+## TODO: Fit and assess models with predictors both_SAT + high_GPA
+fit_basic2 <- lm(univ_GPA ~ high_GPA + both_SAT, data = df_composite)
+
+fit_basic2
 ```
 
     ## 
@@ -591,7 +636,7 @@ fit_basic
 
 ``` r
 ## NOTE: The following computes confidence intervals on regression coefficients
-fit_basic %>%
+fit_basic2 %>%
   tidy(
     conf.int = TRUE,
     conf.level = 0.99
@@ -605,10 +650,19 @@ fit_basic %>%
     ## 2 high_GPA    0.541     0.0837        6.47 0.00000000353  0.322      0.761  
     ## 3 both_SAT    0.000792  0.000387      2.05 0.0432        -0.000224   0.00181
 
+``` r
+rsquare(fit_basic2, df_composite)
+```
+
+    ## [1] 0.6231977
+
 **Observations**:
 
 - How well do these models perform, compared to the one you built in q6?
-  - It seems to compare worse compared to q6
+  - Based on R-squared values, the fit using both fits best (0.62). Note
+    that this is only slightly better than just high school GPA.
+    Compared to q6, these are both seemingly better models by the
+    R-squared metric.
 - What is the confidence interval on the coefficient of `both_SAT` when
   including `high_GPA` as a predictor?? Is this coefficient
   significantly different from zero?
@@ -639,11 +693,9 @@ Before closing, let’s synthesize a bit from the analyses above.
   pieces of evidence do you have in favor of `both_SAT` being effective?
   What specific pieces of evidence do you have against?
   - No. Both_SAT by the correlation test shows some efficacy of
-    measuring univ_GPA, but this is just an indication of correlation
-    and not causality. On the other hand, our linear regression model
-    indicates that Both_SAT does not a have a significant effect on
-    univ_GPA. This is backed by a p value that is much greater than the
-    desired 0.01.
+    measuring univ_GPA, but on the other hand both_SAT shows little
+    predictive value (alone) judging by the fit done with just both_SAT,
+    seeing how its R squared value was only .46.
 
 # End Notes
 
