@@ -25,15 +25,9 @@ Unlike exercises, **challenges will be graded**. The following rubrics define ho
 
 <!-- ------------------------- -->
 
-| Category    | Needs Improvement                                                                                                | Satisfactory                                                                                                               |
+| Category \| Needs Improvement \| Satisfactory \|
 
-|------------------|-----------------------------|-------------------------|
-| Effort      | Some task **q**'s left unattempted                                                                               | All task **q**'s attempted                                                                                                 |
-| Observed    | Did not document observations, or observations incorrect                                                         | Documented correct observations based on analysis                                                                          |
-| Supported   | Some observations not clearly supported by analysis                                                              | All observations clearly supported by analysis (table, graph, etc.)                                                        |
-| Assessed    | Observations include claims not supported by the data, or reflect a level of certainty not warranted by the data | Observations are appropriately qualified by the quality & relevance of the data and (in)conclusiveness of the support      |
-| Specified   | Uses the phrase "more data are necessary" without clarification                                                  | Any statement that "more data are necessary" specifies which *specific* data are needed to answer what *specific* question |
-| Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability                                 | Code sufficiently close to the [style guide](https://style.tidyverse.org/)                                                 |
+\|------------------\|-----------------------------\|-------------------------\| \| Effort \| Some task **q**'s left unattempted \| All task **q**'s attempted \| \| Observed \| Did not document observations, or observations incorrect \| Documented correct observations based on analysis \| \| Supported \| Some observations not clearly supported by analysis \| All observations clearly supported by analysis (table, graph, etc.) \| \| Assessed \| Observations include claims not supported by the data, or reflect a level of certainty not warranted by the data \| Observations are appropriately qualified by the quality & relevance of the data and (in)conclusiveness of the support \| \| Specified \| Uses the phrase "more data are necessary" without clarification \| Any statement that "more data are necessary" specifies which *specific* data are needed to answer what *specific* question \| \| Code Styled \| Violations of the [style guide](https://style.tidyverse.org/) hinder readability \| Code sufficiently close to the [style guide](https://style.tidyverse.org/) \|
 
 ## Due Date
 
@@ -230,8 +224,8 @@ One last wrangling step: We need to join the two datasets so we can compare popu
 ```{r q5-task}
 ## TODO: Join df_q4 and df_pop by the appropriate column
 
-df_data <- df_q4 %>% full_join(df_pop, by = "id") %>%
-  rename("geographic_area_name" = "geographic_area_name.x")
+df_data <- df_q4 %>%
+  full_join(df_pop, by = c("id", "geographic_area_name"))
 df_data
 ```
 
@@ -268,17 +262,7 @@ df_data %>%
   )
 ```
 
-**Observations**:
--   In many counties of Boston, including Norfolk, Middlesex, Plymouth, and Worcester, the median household income for 2-person families was significantly lower than that of families with a larger household
--   It's impossible to conclude anything meaningful about the median household income for 5 person families in Nantucket and Dukes counties since the interval is so large.
-    -   A similar observation can be made for 6-person families in Berkshire and Hampshire counties
--   A general trend seems to be with more people in the household, the larger the confidence interval has to become to be 99% confident
--   Can you confidently distinguish between household incomes in Suffolk county? Why or why not?
-    -   No; if I were given the median household income of a family living in Suffolk county, I would not be able to place the size of the family. The confidence intervals on median income for different sized families overlap greatly in Suffolk county.
--   Which counties have the widest confidence intervals?
-    -   Nantucket for 5-person families, followed by Dukes
-    -   Berkshire and Hampshire for 6-person families with roughly the same width
-    -   For 2, 3, and 4 person families, Nantucket and Dukes seem to also have very wide intervals
+**Observations**: - In many counties of Boston, including Norfolk, Middlesex, Plymouth, and Worcester, the median household income for 2-person families was significantly lower than that of families with a larger household - It's impossible to conclude anything meaningful about the median household income for 5 person families in Nantucket and Dukes counties since the interval is so large. - A similar observation can be made for 6-person families in Berkshire and Hampshire counties - A general trend seems to be with more people in the household, the larger the confidence interval has to become to be 99% confident - Can you confidently distinguish between household incomes in Suffolk county? Why or why not? - No; if I were given the median household income of a family living in Suffolk county, I would not be able to place the size of the family. The confidence intervals on median income for different sized families overlap greatly in Suffolk county. - Which counties have the widest confidence intervals? - Nantucket for 5-person families, followed by Dukes - Berkshire and Hampshire for 6-person families with roughly the same width - For 2, 3, and 4 person families, Nantucket and Dukes seem to also have very wide intervals
 
 In the next task you'll investigate the relationship between population and uncertainty.
 
@@ -296,8 +280,10 @@ df_data %>%
 
 -   What *overall* trend do you see between `SE` and population? Why might this trend exist?
 
-    -   They seem to be inversely proportionally related. As a population size increases, so too might the sample size. Since the standard error is inversely proportional to the sample size, then it will decrease as population increases.
+    -   They seem to be inversely proportionally related. As a population size increases, so too might the sample size. This may be due to the census collecting a certain percentage of a population as a sample. Since the standard error is inversely proportional to the sample size, then it will decrease as population increases.
+
 -   What does this *overall* trend tell you about the relative ease of studying small vs large counties?
+
     -   With large counties like Suffolk or Los Angeles, there is a huge population to gather data from. It is relatively easier to get a lower standard error when the sample is so large. On the other hand, smaller counties (by population) inherently have a smaller population to sample from. Thus any variance present in the data cannot be mitigated as much as it would be by a large sample.
 
 # Going Further
