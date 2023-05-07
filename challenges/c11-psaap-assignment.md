@@ -273,9 +273,8 @@ of fluid, for different experimental settings (e.g. different dimensions
 ##       design your visual to handle the multiple simulations,
 ##       each identified by different values of idx
 df_psaap %>%
-  ggplot() +
-  geom_point(mapping = aes(x = x, y = T_norm)) +
-  facet_wrap( ~ idx)
+  ggplot(aes(group = idx, color=idx)) +
+  geom_line(mapping = aes(x = x, y = T_norm))
 ```
 
 ![](c11-psaap-assignment_files/figure-gfm/q2-task-1.png)<!-- -->
@@ -571,8 +570,9 @@ bind_rows(
 - Which model tends to be more accurate? How can you tell from this
   predicted-vs-actual plot?
   - A predicted vs. actual plot should have a slope of roughly 1. As we
-    can see, both just x and my q4 fit are pretty accurate predictors.
-    The x fit might be slightly more accurate.
+    can see, the x only model is a more effective predictor. The x only
+    model has a positive slope, but the q4 model has a slope of roughly
+    0.
 - Which model tends to be *more confident* in its predictions? Put
   differently, which model has *narrower prediction intervals*?
   - The just x fit has more confident predictions
@@ -722,21 +722,53 @@ rsquare(fit_q6, df_validate)
 
 ``` r
 df_intervals_q6 <- 
-  add_uncertainties(model = fit_q6, data = df_design, interval = "prediction", prefix = "pi", level = 0.8)
+  add_uncertainties(model = fit_q6, data = df_validate, interval = "prediction", prefix = "pi", level = 0.8)
 df_intervals_q6
 ```
 
-    ## # A tibble: 1 × 7
-    ##       x     L     W   U_0 pi_fit pi_lwr pi_upr
-    ##   <dbl> <dbl> <dbl> <dbl>  <dbl>  <dbl>  <dbl>
-    ## 1     1   0.2  0.04     1   1.88   1.46   2.30
+    ## # A tibble: 60 × 25
+    ##        x   idx     L      W   U_0    N_p    k_f   T_f rho_f    mu_f  lam_f  C_fp
+    ##    <dbl> <dbl> <dbl>  <dbl> <dbl>  <dbl>  <dbl> <dbl> <dbl>   <dbl>  <dbl> <dbl>
+    ##  1  0.25    21 0.198 0.0405  1.89 2.26e6 0.0939  269. 1.23  1.85e-5 0.0363 1263.
+    ##  2  0.25    22 0.158 0.0331  2.27 1.56e6 0.115   320. 1.45  2.19e-5 0.0342  982.
+    ##  3  0.25    23 0.177 0.0448  2.08 2.15e6 0.0851  332. 0.968 2.24e-5 0.0270  908.
+    ##  4  0.25    24 0.141 0.0385  2.49 1.66e6 0.114   344. 1.41  2.29e-5 0.0321 1243.
+    ##  5  0.25    25 0.182 0.0366  1.73 2.02e6 0.0887  368. 1.02  2.13e-5 0.0263  866.
+    ##  6  0.25    26 0.145 0.0496  1.85 1.89e6 0.124   309. 1.08  2.03e-5 0.0354 1046.
+    ##  7  0.25    27 0.162 0.0426  2.22 1.77e6 0.0925  302. 1.05  1.99e-5 0.0376  922.
+    ##  8  0.25    28 0.129 0.0346  2.02 2.30e6 0.0817  245. 1.34  1.56e-5 0.0362 1029.
+    ##  9  0.25    29 0.193 0.0469  2.43 1.62e6 0.105   291. 1.37  1.80e-5 0.0253  880.
+    ## 10  0.25    30 0.153 0.0403  1.69 2.24e6 0.100   360. 1.49  1.68e-5 0.0327 1053.
+    ## # … with 50 more rows, and 13 more variables: rho_p <dbl>, d_p <dbl>,
+    ## #   C_pv <dbl>, h <dbl>, I_0 <dbl>, eps_p <dbl>, avg_q <dbl>, avg_T <dbl>,
+    ## #   rms_T <dbl>, T_norm <dbl>, pi_fit <dbl>, pi_lwr <dbl>, pi_upr <dbl>
 
 ``` r
-valid_and_in_pi <- sum((df_validate$T_norm >= 1.45685 & df_validate$T_norm <= 2.296426))/nrow(df_validate)
+valid_and_in_pi <- sum((df_validate$T_norm >= df_intervals_q6$pi_lwr & df_validate$T_norm <= df_intervals_q6$pi_upr))/nrow(df_validate)
 valid_and_in_pi
 ```
 
-    ## [1] 0.05
+    ## [1] 0.9333333
+
+``` r
+prediction <- predict(fit_q6, data = df_design) %>%
+  tidy()
+```
+
+    ## Warning: 'tidy.numeric' is deprecated.
+    ## See help("Deprecated")
+
+``` r
+min(prediction$x)
+```
+
+    ## [1] -0.05564862
+
+``` r
+max(prediction$x)
+```
+
+    ## [1] 1.636046
 
 **Recommendation**:
 
@@ -755,14 +787,11 @@ valid_and_in_pi
     member of the population.
 - What fraction of validation cases lie within the interval you predict?
   How does this compare with `pr_level`?
-  - 5% of the validation cases lie within the interval I predict. If the
-    model were predicting the behavior of future cases well, it would
-    probably be roughly 80%. However because the proportion of
-    validation cases in the interval is so low, it is likely that my
-    model is not adequately capturing the data.
+  - 93% of the validation cases lie within the interval I predict. This
+    is higher than the pr_level.
 - What interval for `T_norm` would you recommend the design team to plan
   around?
-  - Between 1.45685 and 2.296426
+  - Between -.055 and 1.63
 - Are there any other recommendations you would provide?
   - It’s a good idea to include safety factors to ensure the expected
     T_norm will never get dangerously close to the upper or lower bounds

@@ -122,9 +122,8 @@ The primary output of interest is `T_norm = (avg_T - T_f) / T_f`, the normalized
 ##       design your visual to handle the multiple simulations,
 ##       each identified by different values of idx
 df_psaap %>%
-  ggplot() +
-  geom_point(mapping = aes(x = x, y = T_norm)) +
-  facet_wrap( ~ idx)
+  ggplot(aes(group = idx, color=idx)) +
+  geom_line(mapping = aes(x = x, y = T_norm))
 ```
 
 ## Modeling
@@ -349,7 +348,7 @@ bind_rows(
 **Observations**:
 
 -   Which model tends to be more accurate? How can you tell from this predicted-vs-actual plot?
-    -   A predicted vs. actual plot should have a slope of roughly 1. As we can see, both just x and my q4 fit are pretty accurate predictors. The x fit might be slightly more accurate.
+    -   A predicted vs. actual plot should have a slope of roughly 1. As we can see, the x only model is a more effective predictor. The x only model has a positive slope, but the q4 model has a slope of roughly 0.
 -   Which model tends to be *more confident* in its predictions? Put differently, which model has *narrower prediction intervals*?
     -   The just x fit has more confident predictions
 -   How many predictors does the `fit_simple` model need in order to make a prediction? What about your model `fit_q4`?
@@ -455,12 +454,17 @@ rsquare(fit_q6, df_train)
 rsquare(fit_q6, df_validate)
 
 df_intervals_q6 <- 
-  add_uncertainties(model = fit_q6, data = df_design, interval = "prediction", prefix = "pi", level = 0.8)
+  add_uncertainties(model = fit_q6, data = df_validate, interval = "prediction", prefix = "pi", level = 0.8)
 df_intervals_q6
 
-valid_and_in_pi <- sum((df_validate$T_norm >= 1.45685 & df_validate$T_norm <= 2.296426))/nrow(df_validate)
+valid_and_in_pi <- sum((df_validate$T_norm >= df_intervals_q6$pi_lwr & df_validate$T_norm <= df_intervals_q6$pi_upr))/nrow(df_validate)
 valid_and_in_pi
 
+prediction <- predict(fit_q6, data = df_design) %>%
+  tidy()
+
+min(prediction$x)
+max(prediction$x)
 ```
 
 **Recommendation**:
@@ -470,9 +474,9 @@ valid_and_in_pi
 -   What kind of interval---confidence or prediction---would you use for this task, and why?
     -   Prediction. Confidence intervals estimate a statistic about a population--prediction intervals predict a statistic about a future member of the population.
 -   What fraction of validation cases lie within the interval you predict? How does this compare with `pr_level`?
-    -   5% of the validation cases lie within the interval I predict. If the model were predicting the behavior of future cases well, it would probably be roughly 80%. However because the proportion of validation cases in the interval is so low, it is likely that my model is not adequately capturing the data.
+    -   93% of the validation cases lie within the interval I predict. This is higher than the pr_level.
 -   What interval for `T_norm` would you recommend the design team to plan around?
-    -   Between 1.45685 and 2.296426
+    -   Between -.055 and 1.63
 -   Are there any other recommendations you would provide?
     -   It's a good idea to include safety factors to ensure the expected T_norm will never get dangerously close to the upper or lower bounds of its range.
 
