@@ -79,14 +79,23 @@ define how you will be graded, both on an individual and team basis.
 
 <!-- ------------------------- -->
 
-| Category    | Needs Improvement                                                                                                | Satisfactory                                                                                                               |
-|-------------|------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------|
-| Effort      | Some task **q**’s left unattempted                                                                               | All task **q**’s attempted                                                                                                 |
-| Observed    | Did not document observations, or observations incorrect                                                         | Documented correct observations based on analysis                                                                          |
-| Supported   | Some observations not clearly supported by analysis                                                              | All observations clearly supported by analysis (table, graph, etc.)                                                        |
-| Assessed    | Observations include claims not supported by the data, or reflect a level of certainty not warranted by the data | Observations are appropriately qualified by the quality & relevance of the data and (in)conclusiveness of the support      |
-| Specified   | Uses the phrase “more data are necessary” without clarification                                                  | Any statement that “more data are necessary” specifies which *specific* data are needed to answer what *specific* question |
-| Code Styled | Violations of the [style guide](https://style.tidyverse.org/) hinder readability                                 | Code sufficiently close to the [style guide](https://style.tidyverse.org/)                                                 |
+Category \| Needs Improvement \| Satisfactory \|
+
+\|——————\|—————————–\|————————-\| \| Effort \| Some task **q**’s left
+unattempted \| All task **q**’s attempted \| \| Observed \| Did not
+document observations, or observations incorrect \| Documented correct
+observations based on analysis \| \| Supported \| Some observations not
+clearly supported by analysis \| All observations clearly supported by
+analysis (table, graph, etc.) \| \| Assessed \| Observations include
+claims not supported by the data, or reflect a level of certainty not
+warranted by the data \| Observations are appropriately qualified by the
+quality & relevance of the data and (in)conclusiveness of the support \|
+\| Specified \| Uses the phrase “more data are necessary” without
+clarification \| Any statement that “more data are necessary” specifies
+which *specific* data are needed to answer what *specific* question \|
+\| Code Styled \| Violations of the [style
+guide](https://style.tidyverse.org/) hinder readability \| Code
+sufficiently close to the [style guide](https://style.tidyverse.org/) \|
 
 ## Due Date
 
@@ -123,7 +132,7 @@ filename_pop <- "data/ACSDT5Y2018.B01003-Data.csv"
 ## NOTE: No need to edit
 df_pop <-
   read_csv(
-    filename_pop,
+    "./data/ACSDT5Y2018.B01003-Data.csv",
     skip = 2,
     col_names = c(
       "id",
@@ -193,7 +202,7 @@ filename_income <- "data/ACSST5Y2018.S1903-Data.csv"
 
 ## NOTE: No need to edit
 df_income <-
-  read_csv(filename_income, skip = 1)
+  read_csv("data/ACSST5Y2018.S1903-Data.csv", skip = 1)
 ```
 
     ## New names:
@@ -441,29 +450,28 @@ compare population with income.
 ``` r
 ## TODO: Join df_q4 and df_pop by the appropriate column
 
-df_data <- df_q4 %>% full_join(df_pop, by = "id") %>%
-  rename("geographic_area_name" = "geographic_area_name.x")
+df_data <- df_q4 %>%
+  full_join(df_pop, by = c("id", "geographic_area_name"))
 df_data
 ```
 
-    ## # A tibble: 15,287 × 15
-    ##    id    geogr…¹ categ…² incom…³ incom…⁴ incom…⁵ incom…⁶ incom…⁷ incom…⁸ geogr…⁹
-    ##    <chr> <chr>   <chr>     <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl> <chr>  
-    ##  1 0500… Autaug… 2-pers…   64947    6663   4050.  0.0624  54514.  75380. Autaug…
-    ##  2 0500… Autaug… 3-pers…   80172   14181   8621.  0.108   57967. 102377. Autaug…
-    ##  3 0500… Autaug… 4-pers…   85455   10692   6500.  0.0761  68713. 102197. Autaug…
-    ##  4 0500… Autaug… 5-pers…   88601   20739  12607.  0.142   56127. 121075. Autaug…
-    ##  5 0500… Autaug… 6-pers…  103787   12387   7530.  0.0726  84391. 123183. Autaug…
-    ##  6 0500… Baldwi… 2-pers…   63975    2297   1396.  0.0218  60378.  67572. Baldwi…
-    ##  7 0500… Baldwi… 3-pers…   79390    8851   5381.  0.0678  65531.  93249. Baldwi…
-    ##  8 0500… Baldwi… 4-pers…   88458    5199   3160.  0.0357  80317.  96599. Baldwi…
-    ##  9 0500… Baldwi… 5-pers…   91259    7011   4262.  0.0467  80281. 102237. Baldwi…
-    ## 10 0500… Baldwi… 6-pers…   69609   23175  14088.  0.202   33320. 105898. Baldwi…
-    ## # … with 15,277 more rows, 5 more variables: population_estimate <dbl>,
-    ## #   population_moe <chr>, X5 <chr>, X6 <chr>, X7 <lgl>, and abbreviated
-    ## #   variable names ¹​geographic_area_name, ²​category, ³​income_estimate,
-    ## #   ⁴​income_moe, ⁵​income_SE, ⁶​income_CV, ⁷​income_lo, ⁸​income_hi,
-    ## #   ⁹​geographic_area_name.y
+    ## # A tibble: 15,287 × 14
+    ##    id    geogr…¹ categ…² incom…³ incom…⁴ incom…⁵ incom…⁶ incom…⁷ incom…⁸ popul…⁹
+    ##    <chr> <chr>   <chr>     <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 0500… Autaug… 2-pers…   64947    6663   4050.  0.0624  54514.  75380.   55200
+    ##  2 0500… Autaug… 3-pers…   80172   14181   8621.  0.108   57967. 102377.   55200
+    ##  3 0500… Autaug… 4-pers…   85455   10692   6500.  0.0761  68713. 102197.   55200
+    ##  4 0500… Autaug… 5-pers…   88601   20739  12607.  0.142   56127. 121075.   55200
+    ##  5 0500… Autaug… 6-pers…  103787   12387   7530.  0.0726  84391. 123183.   55200
+    ##  6 0500… Baldwi… 2-pers…   63975    2297   1396.  0.0218  60378.  67572.  208107
+    ##  7 0500… Baldwi… 3-pers…   79390    8851   5381.  0.0678  65531.  93249.  208107
+    ##  8 0500… Baldwi… 4-pers…   88458    5199   3160.  0.0357  80317.  96599.  208107
+    ##  9 0500… Baldwi… 5-pers…   91259    7011   4262.  0.0467  80281. 102237.  208107
+    ## 10 0500… Baldwi… 6-pers…   69609   23175  14088.  0.202   33320. 105898.  208107
+    ## # … with 15,277 more rows, 4 more variables: population_moe <chr>, X5 <chr>,
+    ## #   X6 <chr>, X7 <lgl>, and abbreviated variable names ¹​geographic_area_name,
+    ## #   ²​category, ³​income_estimate, ⁴​income_moe, ⁵​income_SE, ⁶​income_CV,
+    ## #   ⁷​income_lo, ⁸​income_hi, ⁹​population_estimate
 
 # Analysis
 
@@ -502,30 +510,24 @@ df_data %>%
 
 ![](c09-income-assignment_files/figure-gfm/q6-task-1.png)<!-- -->
 
-**Observations**:
-
-- In many counties of Boston, including Norfolk, Middlesex, Plymouth,
-  and Worcester, the median household income for 2-person families was
-  significantly lower than that of families with a larger household
-- It’s impossible to conclude anything meaningful about the median
-  household income for 5 person families in Nantucket and Dukes counties
-  since the interval is so large.
-  - A similar observation can be made for 6-person families in Berkshire
-    and Hampshire counties
-- A general trend seems to be with more people in the household, the
-  larger the confidence interval has to become to be 99% confident
-- Can you confidently distinguish between household incomes in Suffolk
-  county? Why or why not?
-  - No; if I were given the median household income of a family living
-    in Suffolk county, I would not be able to place the size of the
-    family. The confidence intervals on median income for different
-    sized families overlap greatly in Suffolk county.
-- Which counties have the widest confidence intervals?
-  - Nantucket for 5-person families, followed by Dukes
-  - Berkshire and Hampshire for 6-person families with roughly the same
-    width
-  - For 2, 3, and 4 person families, Nantucket and Dukes seem to also
-    have very wide intervals
+**Observations**: - In many counties of Boston, including Norfolk,
+Middlesex, Plymouth, and Worcester, the median household income for
+2-person families was significantly lower than that of families with a
+larger household - It’s impossible to conclude anything meaningful about
+the median household income for 5 person families in Nantucket and Dukes
+counties since the interval is so large. - A similar observation can be
+made for 6-person families in Berkshire and Hampshire counties - A
+general trend seems to be with more people in the household, the larger
+the confidence interval has to become to be 99% confident - Can you
+confidently distinguish between household incomes in Suffolk county? Why
+or why not? - No; if I were given the median household income of a
+family living in Suffolk county, I would not be able to place the size
+of the family. The confidence intervals on median income for different
+sized families overlap greatly in Suffolk county. - Which counties have
+the widest confidence intervals? - Nantucket for 5-person families,
+followed by Dukes - Berkshire and Hampshire for 6-person families with
+roughly the same width - For 2, 3, and 4 person families, Nantucket and
+Dukes seem to also have very wide intervals
 
 In the next task you’ll investigate the relationship between population
 and uncertainty.
@@ -549,12 +551,16 @@ df_data %>%
 
 - What *overall* trend do you see between `SE` and population? Why might
   this trend exist?
+
   - They seem to be inversely proportionally related. As a population
-    size increases, so too might the sample size. Since the standard
-    error is inversely proportional to the sample size, then it will
-    decrease as population increases.
+    size increases, so too might the sample size. This may be due to the
+    census collecting a certain percentage of a population as a sample.
+    Since the standard error is inversely proportional to the sample
+    size, then it will decrease as population increases.
+
 - What does this *overall* trend tell you about the relative ease of
   studying small vs large counties?
+
   - With large counties like Suffolk or Los Angeles, there is a huge
     population to gather data from. It is relatively easier to get a
     lower standard error when the sample is so large. On the other hand,
@@ -596,6 +602,7 @@ Does confidence interval size correlate with family size category?
 **Observations**:
 
 - Document your observations here
+
   - The median confidence interval tends to increase with the size of
     the family, meaning if this relationship is causal, you can only be
     99% confident that the estimated income for a certain group will lie
